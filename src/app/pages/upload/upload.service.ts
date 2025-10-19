@@ -10,10 +10,10 @@ export class UploadService {
 
   constructor(private http: HttpClient) {}
 
-  uploadFile(file: File): Observable<HttpEvent<any>> {
+  uploadFile(file: File, description:string): Observable<HttpEvent<any>> {
     const formData = new FormData();
     formData.append('file', file, file.name);
-    formData.append('data', '{"name":"eee", "description":"otro"}')
+    formData.append('data', `{"name":"eee", "description":"${description}"}`)
 
     // Configuramos el request con reportProgress para monitorear el progreso
     const req = new HttpRequest('POST', this.apiUrl, formData, {
