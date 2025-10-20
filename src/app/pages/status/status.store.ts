@@ -10,14 +10,14 @@ export class StatusStore {
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
-  constructor(private datasetService: StatusService) {}
+  constructor(private statusService: StatusService) {}
 
   // Método para cargar datasets
   loadDatasets() {
     this.loading.set(true);
     this.error.set(null);
 
-    this.datasetService.getDatasets().subscribe({
+    this.statusService.getDatasets().subscribe({
       next: (data) => {
         this.datasets.set(data);
         this.loading.set(false);

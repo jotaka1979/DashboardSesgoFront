@@ -1,54 +1,78 @@
-<das-container>   
+<das-container [loading]="datasetStore.loading()">
 
   <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
     <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">
       Cargar nuevo dataset
     </h2>
-<textarea
-[(ngModel)]="description"
-  id="descripcion"
-  name="descripcion"
-  rows="4"
-  placeholder="Escriba una descripción detallada del dataset..."
-  class="w-full rounded-xl border border-gray-300 p-3 text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:ring focus:ring-blue-100 resize-y"
-></textarea>
-    <input
-      type="file"
-      (change)="onFileSelected($event)"
-      class="block w-full text-sm text-gray-700
+    <textarea [(ngModel)]="description" id="descripcion" name="descripcion" rows="4"
+      placeholder="Escriba una descripción detallada del dataset..."
+      class="w-full rounded-xl border border-gray-300 p-3 text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:ring focus:ring-blue-100 resize-y"></textarea>
+    <input type="file" (change)="onFileSelected($event)" class="block w-full text-sm text-gray-700
              file:mr-4 file:py-2 file:px-4
              file:rounded-full file:border-0
              file:text-sm file:font-semibold
              file:bg-blue-50 file:text-blue-700
-             hover:file:bg-blue-100 mb-4"
-    />
+             hover:file:bg-blue-100 mb-4" />
 
-    <button
-      (click)="onUpload()"
-      [disabled]="!selectedFile"
-      class="w-full py-2 px-4 rounded-lg font-medium
+    <button (click)="onUpload()" [disabled]="!selectedFile" class="w-full py-2 px-4 rounded-lg font-medium
              bg-blue-600 text-white hover:bg-blue-700
              disabled:bg-gray-300 disabled:cursor-not-allowed
-             transition-all duration-200"
-    >
+             transition-all duration-200">
       Subier archivo
     </button>
 
-    <div *ngIf="uploadProgress > 0" class="mt-6 w-full">
+    <div *ngIf="datasetStore.progress() > 0" class="mt-6 w-full">
       <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-        <div
-          class="bg-green-500 h-full transition-all duration-500"
-          [style.width.%]="uploadProgress"
-        ></div>
+        <div class="bg-green-500 h-full transition-all duration-500" [style.width.%]="datasetStore.progress()"></div>
       </div>
       <p class="text-sm text-gray-600 mt-2 text-center">
-        {{ uploadProgress }}%
+        {{ datasetStore.progress() }}%
       </p>
     </div>
 
-    <p *ngIf="uploadComplete" class="text-green-600 font-medium mt-4 text-center">
-      ✅ Archivo subido con éxito
-    </p>
+    @if (datasetStore.result(); as result) {
+      <h3 class="text-lg font-semibold mb-2">
+        Resultado — Total: {{ result.count }}
+      </h3>
+
+      @if (result.head?.length > 0) {
+        <!-- Scroll horizontal -->
+        <div class="overflow-x-auto border rounded-lg shadow-sm">
+          <table class="min-w-max w-full text-sm text-left border-collapse">
+            <thead class="bg-gray-100 border-b">
+              <tr>
+                @for (col of Object.keys(result.head[0]); track col) {
+                  <th class="px-4 py-2 font-medium text-gray-700 whitespace-nowrap">
+                    {{ col }}
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of result.head; track $index) {
+                <tr class="border-b hover:bg-gray-50">
+                  @for (col of Object.keys(result.head[0]); track col) {
+                    <td class="px-4 py-2 whitespace-nowrap">
+                      {{ row[col] }}
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="text-gray-500">No hay datos disponibles.</p>
+      }
+    } @else {
+      <p class="text-gray-500">Sube un archivo para ver el resultado.</p>
+    }
+
+    @if (datasetStore.error()) {
+    <div  class="text-red-500">
+       {{ datasetStore.error().error }}
+    </div>
+  }
   </div>
 
 </das-container>

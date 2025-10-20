@@ -3,7 +3,7 @@ import { ContainerComponent } from '../../components/container/container.compone
 import { NgIconComponent } from '@ng-icons/core';
 import { RouterLink } from '@angular/router';
 import { StatusStore } from './status.store';
-import { DatePipe, NgFor } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-status',

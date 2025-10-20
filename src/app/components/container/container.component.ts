@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
   selector: 'das-container',
   imports: [],
   templateUrl: `container.component.html`,
   styleUrl: './container.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
 })
-export class ContainerComponent { }
+export class ContainerComponent { 
+   @Input() loading = false;
+}
