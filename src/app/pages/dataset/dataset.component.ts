@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { HttpClientModule, HttpEventType } from '@angular/common/http';
-import { UploadService } from './upload.service';
+import { UploadService } from './dataset.service';
 import { CommonModule } from '@angular/common';
 import { ContainerComponent } from '../../components/container/container.component';
 import { FormsModule } from '@angular/forms';
 @Component({
-  selector: 'app-upload',
+  selector: 'app-dataset',
   imports: [CommonModule, ContainerComponent, FormsModule, HttpClientModule],
-  templateUrl: 'upload.html',
-  styleUrl: './upload.component.css',
+  templateUrl: 'dataset.component.html',
+  styleUrl: './dataset.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UploadComponent {
+export class DatasetComponent {
   selectedFile?: File;
   uploadProgress: number = 0;
   uploadComplete: boolean = false;

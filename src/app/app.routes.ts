@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { UploadComponent } from './pages/upload/upload.component';
+import { DatasetComponent } from './pages/dataset/dataset.component';
 import { App } from './app';
 import { StatusComponent } from './pages/status/status.component';
 
 export const routes: Routes = [
       { path: 'status', component: StatusComponent },
   { path: '', redirectTo: '/status', pathMatch: 'full' }, // 👈 ruta por defecto
-    {  path:'upload', component: UploadComponent}   
+    {  path:'dataset', component: DatasetComponent}   
 ];
