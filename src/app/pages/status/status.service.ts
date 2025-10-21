@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../../environments/environment';
+console.log(environment.apiUrl);
 @Injectable({
   providedIn: 'root'
 })
 export class StatusService {
-  private apiUrl = 'http://127.0.0.1:8000/api/dataset'; // endpoint de Django
+  private apiUrl = `${environment.apiUrl}/dataset`; // endpoint de Django
 
   constructor(private http: HttpClient) {}
 
