@@ -1,6 +1,6 @@
 <das-container [loading]="datasetStore.loading()">
 
-  <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+  <div class="bg-white rounded-2xl shadow-lg p-4 w-full mb-4">
     <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">
       Cargar nuevo dataset
     </h2>
@@ -18,7 +18,7 @@
              bg-blue-600 text-white hover:bg-blue-700
              disabled:bg-gray-300 disabled:cursor-not-allowed
              transition-all duration-200">
-      Subier archivo
+      Subir archivo
     </button>
 
     <div *ngIf="datasetStore.progress() > 0" class="mt-6 w-full">
@@ -29,50 +29,55 @@
         {{ datasetStore.progress() }}%
       </p>
     </div>
-
-    @if (datasetStore.result(); as result) {
-      <h3 class="text-lg font-semibold mb-2">
-        Resultado — Total: {{ result.count }}
-      </h3>
-
-      @if (result.head?.length > 0) {
-        <!-- Scroll horizontal -->
-        <div class="overflow-x-auto border rounded-lg shadow-sm">
-          <table class="min-w-max w-full text-sm text-left border-collapse">
-            <thead class="bg-gray-100 border-b">
-              <tr>
-                @for (col of Object.keys(result.head[0]); track col) {
-                  <th class="px-4 py-2 font-medium text-gray-700 whitespace-nowrap">
-                    {{ col }}
-                  </th>
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of result.head; track $index) {
-                <tr class="border-b hover:bg-gray-50">
-                  @for (col of Object.keys(result.head[0]); track col) {
-                    <td class="px-4 py-2 whitespace-nowrap">
-                      {{ row[col] }}
-                    </td>
-                  }
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      } @else {
-        <p class="text-gray-500">No hay datos disponibles.</p>
-      }
-    } @else {
-      <p class="text-gray-500">Sube un archivo para ver el resultado.</p>
-    }
-
-    @if (datasetStore.error()) {
-    <div  class="text-red-500">
-       {{ datasetStore.error().error }}
-    </div>
-  }
   </div>
+
+
+  @if (datasetStore.result(); as result) {
+  <div class="bg-white rounded-2xl shadow-lg p-4 w-full">
+    <h3 class="text-lg font-semibold mb-2">
+      Resultado — Total: {{ result.count }}
+    </h3>
+
+    @if (result.head?.length > 0) {
+    <!-- Scroll horizontal -->
+    <div class="overflow-x-auto border rounded-lg shadow-sm">
+      <table class="min-w-max w-full text-sm text-left border-collapse">
+        <thead class="bg-gray-100 border-b">
+          <tr>
+            @for (col of Object.keys(result.head[0]); track col) {
+            <th class="px-4 py-2 font-medium text-gray-700 whitespace-nowrap">
+              {{ col }}
+            </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of result.head; track $index) {
+          <tr class="border-b hover:bg-gray-50">
+            @for (col of Object.keys(result.head[0]); track col) {
+            <td class="px-4 py-2 whitespace-nowrap">
+              {{ row[col] }}
+            </td>
+            }
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    } @else {
+    <p class="text-gray-500">No hay datos disponibles.</p>
+
+    }
+  </div>
+  }
+  @else {
+  <p class="text-gray-500">Sube un archivo para ver el resultado.</p>
+  }
+
+  @if (datasetStore.error()) {
+  <div class="text-red-500">
+    {{ datasetStore.error().error }}
+  </div>
+  }
 
 </das-container>

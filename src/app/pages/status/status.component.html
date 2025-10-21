@@ -1,30 +1,28 @@
-<das-container>   
-
-    <div  class="flex gap-3 mb-6">
+<das-container>
+  <div class="flex gap-3 mb-6">
     <button routerLink="/dataset"
-        class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all">
-        <ng-icon name="heroDocumentPlus" class="w-5 h-5"></ng-icon>
-        <span>Nuevo dataset</span>
+      class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all">
+      <ng-icon name="heroDocumentPlus" class="w-5 h-5"></ng-icon>
+      <span>Nuevo dataset</span>
     </button>
 
-   
-     <button routerLink="/upload"
-        class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all">
-        <ng-icon name="heroMagnifyingGlass" class="w-5 h-5"></ng-icon>
-        <span>Analizar dataset</span>
+    <button routerLink="/upload"
+      class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all">
+      <ng-icon name="heroMagnifyingGlass" class="w-5 h-5"></ng-icon>
+      <span>Analizar dataset</span>
     </button>
-    
-    </div>
- <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 p-4">
-  @for (ds of store.datasets(); track ds.name) {
-      <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition">
-        <h3 class="text-lg font-semibold">{{ ds.name }}</h3>
-        <p class="text-gray-500">{{ ds.description }}</p>
-        <p class="text-sm text-blue-500 font-medium mt-2">{{ ds.status }}</p>
-        <p class="text-xs text-gray-400">{{ ds.updatedate | date: 'short' }}</p>
-      </div>
-    }
+
   </div>
 
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 p-4">
+    @for (ds of store.datasets(); track ds.name) {
+    <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition">
+      <h3 class="text-lg font-semibold">{{ ds.name }}</h3>
+      <p class="text-gray-500">{{ ds.description }}</p>
+      <p class="text-sm text-blue-500 font-medium mt-2">{{ ds.status }}</p>
+      <p class="text-xs text-gray-400">{{ ds.updatedate | date: 'short' }}</p>
+    </div>
+    }
+  </div>
 
 </das-container>
