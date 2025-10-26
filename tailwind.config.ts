@@ -1,17 +1,16 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from 'tailwindcss'
 
-export default {
-  content: [
-    './src/**/*.{html,ts}', // Escanea todos tus templates y componentes
-  ],
+const config: Config = {
+  content: ['./src/**/*.{html,ts}'],
   theme: {
     extend: {
       colors: {
-        // 🎨 Colores personalizados
-        softBlue: '#60A5FA', // Azul suave (por defecto para botones)
-        softRed: '#F87171',  // Rojo suave (para eliminar)
+        softBlue: '#60A5FA',
+        softRed: '#F87171',
       },
     },
   },
   plugins: [],
-} satisfies Config;
+}
+
+export default config
