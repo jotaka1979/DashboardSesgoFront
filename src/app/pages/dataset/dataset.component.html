@@ -13,15 +13,17 @@
              file:text-sm file:font-semibold
              file:bg-blue-50 file:text-blue-700
              hover:file:bg-blue-100 mb-4" />
-
-    <button (click)="onUpload()" [disabled]="!selectedFile" class="w-full py-2 px-4 rounded-lg font-medium
+    <div class="flex justify-end">
+      <button (click)="onUpload()" [disabled]="!formCompleted()" class="w-auto py-2 px-4 rounded-lg font-medium
              bg-blue-600 text-white hover:bg-blue-700
              disabled:bg-gray-300 disabled:cursor-not-allowed
              transition-all duration-200">
-      Subir archivo
-    </button>
+        Subir archivo
+      </button>
+    </div>
 
-    <div *ngIf="datasetStore.progress() > 0" class="mt-6 w-full">
+    @if (datasetStore.progress() > 0) {
+    <div *ngIf="" class="mt-6 w-full">
       <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
         <div class="bg-green-500 h-full transition-all duration-500" [style.width.%]="datasetStore.progress()"></div>
       </div>
@@ -29,22 +31,23 @@
         {{ datasetStore.progress() }}%
       </p>
     </div>
+    }
   </div>
 
 
   @if (datasetStore.result(); as result) {
   <div class="bg-white rounded-2xl shadow-lg p-4 w-full">
     <h3 class="text-lg font-semibold mb-2">
-      Resultado — Total: {{ result.count }}
+      Resultado — Total: {{ result.rows_count }}
     </h3>
 
-    @if (result.head?.length > 0) {
+    @if (result.preview?.length > 0) {
     <!-- Scroll horizontal -->
     <div class="overflow-x-auto border rounded-lg shadow-sm">
       <table class="min-w-max w-full text-sm text-left border-collapse">
         <thead class="bg-gray-100 border-b">
           <tr>
-            @for (col of Object.keys(result.head[0]); track col) {
+            @for (col of Object.keys(result.preview[0]); track col) {
             <th class="px-4 py-2 font-medium text-gray-700 whitespace-nowrap">
               {{ col }}
             </th>
@@ -52,9 +55,9 @@
           </tr>
         </thead>
         <tbody>
-          @for (row of result.head; track $index) {
+          @for (row of result.preview; track $index) {
           <tr class="border-b hover:bg-gray-50">
-            @for (col of Object.keys(result.head[0]); track col) {
+            @for (col of Object.keys(result.preview[0]); track col) {
             <td class="px-4 py-2 whitespace-nowrap">
               {{ row[col] }}
             </td>
@@ -63,6 +66,22 @@
           }
         </tbody>
       </table>
+      <div class="flex justify-end">
+        <button (click)="onProcess()" class="w-auto py-2 px-4 rounded-lg font-medium
+             bg-blue-600 text-white hover:bg-blue-700
+             disabled:bg-gray-300 disabled:cursor-not-allowed
+             transition-all duration-200">
+          Procesar dataset
+        </button>
+      </div>
+        <div class="flex justify-end">
+        <button (click)="onDelete()" class="w-auto py-2 px-4 rounded-lg font-medium
+            bg-softBlue text-white hover:bg-red-700
+             disabled:bg-gray-300 disabled:cursor-not-allowed
+             transition-all duration-200">
+          Eliminar dataset
+        </button>
+      </div>
     </div>
     } @else {
     <p class="text-gray-500">No hay datos disponibles.</p>

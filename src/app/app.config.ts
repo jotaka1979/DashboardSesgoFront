@@ -18,6 +18,6 @@ export const appConfig: ApplicationConfig = {
       heroUserPlus,
       heroDocumentPlus,
       heroMagnifyingGlass
-    }),
+    }),   
   ]
 };
