@@ -25,7 +25,7 @@ export class DatasetStore {
       dataset_id === 0
         ? this.datasetService.uploadFile(file, description)
         : this.datasetService.reuploadFile(file, description, dataset_id);
-        
+
     request$.subscribe({
       next: (event) => {
         switch (event.type) {
@@ -48,6 +48,21 @@ export class DatasetStore {
         this.error.set(err.error);
         this.loading.set(false);
       },
+    });
+  }
+
+  deleteDataset(dataset_id: number) {
+    this.datasetService.deleteDataset(dataset_id).subscribe({
+      next: event => {
+        if (event.type === HttpEventType.Response) {
+          this.result.set(null);
+          this.dataset_id.set(0);
+          console.log('Eliminado correctamente:', event.body);
+        }
+      },
+      error: err => {
+        console.error('Error al eliminar:', err);
+      }
     });
   }
 

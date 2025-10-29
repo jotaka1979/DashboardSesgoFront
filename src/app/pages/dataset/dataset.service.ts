@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
 export class DatasetService {
   private apiUrl = `${environment.apiUrl}/dataset`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   uploadFile(file: File, description: string): Observable<HttpEvent<any>> {
     const formData = new FormData();
@@ -21,7 +21,7 @@ export class DatasetService {
     return this.http.request(req);
   }
 
-    reuploadFile(file: File, description: string, dataset_id: number): Observable<HttpEvent<any>> {
+  reuploadFile(file: File, description: string, dataset_id: number): Observable<HttpEvent<any>> {
     const formData = new FormData();
     formData.append('file', file, file.name);
     formData.append('data', `{"dataset_id":${dataset_id}, "description":"${description}"}`);
@@ -29,6 +29,12 @@ export class DatasetService {
     const req = new HttpRequest('PUT', this.apiUrl, formData, {
       reportProgress: true,
     });
+
+    return this.http.request(req);
+  }
+
+    deleteDataset(dataset_id: number): Observable<HttpEvent<any>> {
+    const req = new HttpRequest('DELETE', `${this.apiUrl}/${dataset_id}`);
 
     return this.http.request(req);
   }

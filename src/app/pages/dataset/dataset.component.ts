@@ -14,36 +14,37 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 })
 export class DatasetComponent {
   selectedFile?: File;
-  description = signal(''); 
+  description = signal('');
   Object = Object;
-  constructor(public datasetStore: DatasetStore,private snackBar: MatSnackBar) { }
+  constructor(public datasetStore: DatasetStore, private snackBar: MatSnackBar) { }
 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];
   }
 
   onUpload(): void {
-    if (!this.selectedFile) return;      
+    if (!this.selectedFile) return;
     this.datasetStore.uploadFile(this.selectedFile, this.description(), this.datasetStore.dataset_id());
   }
 
-    onProcess(): void {
-   this.snackBar.open('Acción de procesamiento iniciada ✅', 'Cerrar', {
+  onProcess(): void {
+    this.snackBar.open('Acción de procesamiento iniciada ✅', 'Cerrar', {
       duration: 100000,              // duración en milisegundos
       horizontalPosition: 'right', // puede ser 'left', 'center', 'right'
       verticalPosition: 'top',     // puede ser 'top' o 'bottom'
     });
   }
 
-      onDelete(): void {
-   this.snackBar.open('Acción de eliminación iniciada ✅', 'Cerrar', {
-      duration: 100000,              // duración en milisegundos
-      horizontalPosition: 'right', // puede ser 'left', 'center', 'right'
-      verticalPosition: 'top',     // puede ser 'top' o 'bottom'
-    });
+  onDelete(): void {
+    console.log("liminar", this.datasetStore.dataset_id())
+    if (this.datasetStore.dataset_id() != 0) {
+      this.datasetStore.deleteDataset(this.datasetStore.dataset_id());
+      this.description.set("");
+      this.selectedFile = undefined;
+    }
   }
 
   formCompleted(): boolean {
-    return (!!this.selectedFile && this.description()!='');
+    return (!!this.selectedFile && this.description() != '');
   }
 }
