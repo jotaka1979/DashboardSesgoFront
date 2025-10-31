@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-
+import { Component, Input } from '@angular/core';
+import { NgIconComponent } from '@ng-icons/core';
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'das-container',
-  imports: [],
+  imports: [NgIconComponent, RouterLink],
   templateUrl: `container.component.html`,
   styleUrl: './container.component.css',
   standalone: true,

@@ -1,0 +1,48 @@
+/* contenedor horizontal: fila única con scroll X */
+.horizontal-list {
+  display: flex;
+  gap: 16px;                 /* separación entre tarjetas */
+  overflow-x: auto;          /* habilita scroll horizontal */
+  overflow-y: hidden;        /* evita scroll vertical */
+  padding: 12px 8px;
+  -webkit-overflow-scrolling: touch; /* suaviza el scroll en iOS */
+  white-space: normal;
+}
+
+/* cada tarjeta no crece ni se encoje, mantiene su ancho */
+.dataset-card {
+  flex: 0 0 280px;          /* ancho fijo o relativo (ajusta a tu gusto) */
+  min-width: 220px;         /* evita que se vuelvan demasiado angostas */
+  max-width: 320px;
+  border: 1px solid #e5e7eb; /* gris claro */
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+/* hover para dar feedback */
+.dataset-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* contenido dentro de la tarjeta */
+.card-content { display: flex; flex-direction: column; gap: 6px; }
+.dataset-name { font-weight: 600; font-size: 1rem; color: #111827; }
+.dataset-desc { font-size: 0.875rem; color: #4b5563; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+.dataset-date { font-size: 0.75rem; color: #6b7280; }
+
+/* opcional: hacer más visible el padding-right para que el scroll no tape contenido */
+.horizontal-list { padding-right: 24px; }
+
+/* opcional: esconder scrollbar (no obligatorio) */
+.horizontal-list::-webkit-scrollbar { height: 10px; }
+.horizontal-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 10px; }
+
+.custom-dialog-container {
+  max-width: none !important;
+  width: 900px !important;  /* o el ancho que tú quieras */
+}

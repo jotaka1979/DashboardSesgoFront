@@ -1,0 +1,36 @@
+<h2 mat-dialog-title class="text-lg font-semibold mb-2">Seleccionar Dataset</h2>
+
+<mat-dialog-content class="max-h-[70vh] overflow-y-auto px-1">
+  <div
+    *ngIf="datasets?.length; else noData"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-2"
+  >
+    <div
+      *ngFor="let d of datasets"
+      (click)="selectDataset(d)"
+      class="cursor-pointer border border-gray-200 rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition-all duration-150 hover:-translate-y-1"
+    >
+      <div class="flex flex-col gap-1">
+        <span class="font-semibold text-gray-900 text-base">{{ d.name }}</span>
+        <span class="text-sm text-gray-700 line-clamp-2">{{ d.description }}</span>
+        <span class="text-sm text-blue-500 font-medium mt-2">{{ d.status }}</span>
+        <span class="text-xs text-gray-500 mt-2">
+          {{ d.updatedate | date:'short' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noData>
+    <p class="text-gray-500 text-sm text-center py-6">No hay datasets disponibles</p>
+  </ng-template>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="mt-2">
+    <button (click)="close()" class="w-auto py-2 px-4 rounded-lg font-medium
+             bg-softBlue text-white hover:bg-blue-700
+             disabled:bg-gray-300 disabled:cursor-not-allowed
+             transition-all duration-200">
+        Cerrar
+      </button>  
+</mat-dialog-actions>

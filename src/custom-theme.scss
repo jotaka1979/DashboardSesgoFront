@@ -16,3 +16,8 @@ body {
   // user's system settings.
  
 }
+
+:root {
+  --mat-dialog-container-max-width: 900px;
+  --mat-dialog-container-min-width: 400px;
+}

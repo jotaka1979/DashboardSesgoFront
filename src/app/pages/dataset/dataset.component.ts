@@ -16,7 +16,9 @@ export class DatasetComponent {
   selectedFile?: File;
   description = signal('');
   Object = Object;
-  constructor(public datasetStore: DatasetStore, private snackBar: MatSnackBar) { }
+  constructor(public datasetStore: DatasetStore, private snackBar: MatSnackBar) { 
+    this.datasetStore.reset();
+  }
 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];

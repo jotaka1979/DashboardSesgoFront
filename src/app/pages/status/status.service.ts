@@ -7,12 +7,15 @@ console.log(environment.apiUrl);
   providedIn: 'root'
 })
 export class StatusService {
-  private apiUrl = `${environment.apiUrl}/dataset`; // endpoint de Django
+  private apiUrl = `${environment.apiUrl}/dataset`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  // GET simple
   getDatasets(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<any[]>(`${this.apiUrl}/recent`);
+  }
+
+  getAllDatasets(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}`);
   }
 }
