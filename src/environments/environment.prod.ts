@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://jotakamoreno.pythonanywhere.com/api',
+  apiUrl: 'http://72.61.164.63:8000/api',
   featureFlag: true
 };
