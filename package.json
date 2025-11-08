@@ -36,6 +36,7 @@
     "@netlify/angular-runtime": "^3.0.0",
     "@ng-icons/core": "^32.2.0",
     "@ng-icons/heroicons": "^32.2.0",
+    "d3": "^7.9.0",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
@@ -44,6 +45,7 @@
     "@angular/build": "^20.1.6",
     "@angular/cli": "^20.1.6",
     "@angular/compiler-cli": "^20.1.0",
+    "@types/d3": "^7.4.3",
     "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",

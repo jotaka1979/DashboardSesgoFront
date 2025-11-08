@@ -1,0 +1,17 @@
+.bar-chart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.bar-chart text {
+  font-family: 'Inter', sans-serif;
+}
+
+.bar {
+  transition: fill 0.2s;
+}
+.bar:hover {
+  fill: #6366f1;
+}

@@ -7,7 +7,7 @@ import { DatePipe } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { DatasetListModalComponent } from '../../components/dataset-list-modal/dataset-list-modal';
-
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-status',
@@ -17,24 +17,29 @@ import { DatasetListModalComponent } from '../../components/dataset-list-modal/d
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusComponent implements OnInit {
-  constructor(public store: StatusStore, private dialog: MatDialog) { }
+  constructor(public store: StatusStore, private dialog: MatDialog, private router: Router) { }
 
   ngOnInit() {
     this.store.loadDatasets();
     this.store.loadAllDatasets();
   }
-  openDatasetModal() {
-  const dialogRef = this.dialog.open(DatasetListModalComponent, {
-    width: '1200px',
-    maxHeight: '80vh', 
-    data: this.store.allDatasets(),
-    panelClass: 'custom-dialog-container'
-  });
 
-  dialogRef.afterClosed().subscribe((selectedDataset) => {
-    if (selectedDataset) {
-      console.log('Dataset seleccionado:', selectedDataset);
-    }
-  });
-}
+  gotodashboard(id: Number) {
+this.router.navigate(['/dashboard']);
+  }
+
+  openDatasetModal() {
+    const dialogRef = this.dialog.open(DatasetListModalComponent, {
+      width: '1200px',
+      maxHeight: '80vh',
+      data: this.store.allDatasets(),
+      panelClass: 'custom-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe((selectedDataset) => {
+      if (selectedDataset) {
+        console.log('Dataset seleccionado:', selectedDataset);
+      }
+    });
+  }
 }
