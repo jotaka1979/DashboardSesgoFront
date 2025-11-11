@@ -9,6 +9,6 @@ export const routes: Routes = [
   { path: 'status', component: StatusComponent },
   { path: '', redirectTo: '/status', pathMatch: 'full' },
   { path: 'dataset', component: DatasetComponent },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard/:dataset_id', component: DashboardComponent },
 
 ];

@@ -25,7 +25,8 @@ export class StatusComponent implements OnInit {
   }
 
   gotodashboard(id: Number) {
-this.router.navigate(['/dashboard']);
+    console.log('Navegando al dashboard con dataset:', id);
+this.router.navigate([`/dashboard/${id}`]);
   }
 
   openDatasetModal() {

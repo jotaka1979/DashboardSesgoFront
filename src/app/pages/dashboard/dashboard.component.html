@@ -3,12 +3,13 @@
     <!-- Card 1: ocupa 1/3 -->
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
       <das-pie-chart
-        [data]="chartData"
+        [data]="chartData()"
         [width]="300"
         [height]="300"
         [innerRadius]="80"
         [showLabels]="true"
-        title="Distribución de Odio y No Odio">
+        [isLoading]="store.loadingHate()"
+        chartTitle ="Distribución de Odio y No Odio">
       </das-pie-chart>
     </div>
 

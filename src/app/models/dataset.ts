@@ -1,5 +1,5 @@
 export interface Dataset {
-  dataset_id: number;
+  id: number;
   name: string;
   description: string;
   status:string;

@@ -1,20 +1,23 @@
-import { Component, Input, ElementRef, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import { Component, Input, ElementRef, OnChanges, SimpleChanges, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import * as d3 from 'd3';
+import { Distribution } from '../../models/distribution';
 
 @Component({
   selector: 'das-pie-chart',
   standalone: true,
   templateUrl: './pie-chart.component.html',
-  styleUrls: ['./pie-chart.component.css']
+  styleUrls: ['./pie-chart.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PieChartComponent implements AfterViewInit, OnChanges {
 
-  @Input() data: { label: string; value: number; registros?: number; color?: string }[] = [];
+  @Input() data: Distribution[] = [];
   @Input() width = 200;
   @Input() height = 200;
   @Input() innerRadius = 50;
   @Input() showLabels = true;
-  @Input() title = '';
+  @Input() isLoading = false;
+  @Input() chartTitle  = '';
 
   private svg: any;
   private radius = 3;
@@ -29,9 +32,10 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.svg && changes['data']) {
-      this.updateChart();
-    }
+    if (changes['data'] && this.element) {
+    // limpia y vuelve a crear el gráfico completo
+    this.createChart();
+  }
   }
 
   private createChart(): void {
@@ -40,8 +44,8 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
     const { width, height } = this;
     this.radius = Math.min(width, height) / 2;
 
-    d3.select(this.element).select('svg').remove(); // limpiar gráfico previo
-    d3.select(this.element).select('.tooltip').remove(); // limpiar tooltip previo
+    d3.select(this.element).select('svg').remove();
+    d3.select(this.element).select('.tooltip').remove();
 
     this.svg = d3
       .select(this.element)
@@ -58,7 +62,7 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
       .style('position', 'absolute')
       .style('background', 'rgba(0,0,0,0.75)')
       .style('color', '#fff')
-      .style('padding', '6px 10px')
+      .style('padding', '6px 6px')
       .style('border-radius', '6px')
       .style('font-size', '0.85em')
       .style('pointer-events', 'none')
@@ -73,12 +77,12 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
     .range(this.data.map(d => d.color || d3.schemeTableau10[this.data.indexOf(d) % 10]));
 
   const pie = d3.pie<any>()
-    .value((d: any) => d.value)
+    .value((d: any) => d.percentage)
     .sort(null);
 
   const arc = d3.arc<any>()
     .innerRadius(this.innerRadius)
-    .outerRadius(this.radius - 10);
+    .outerRadius(this.radius-12);
 
   const tooltip = d3.select(this.element)
     .append('div')
@@ -86,13 +90,13 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
     .style('position', 'absolute')
     .style('background', 'rgba(0,0,0,0.75)')
     .style('color', '#fff')
-    .style('padding', '6px 10px')
+    .style('padding', '6px 6px')
     .style('border-radius', '6px')
-    .style('font-size', '0.85em')
+    .style('font-size', '0.9em')
     .style('pointer-events', 'none')
     .style('opacity', 0);
 
-  const total = d3.sum(this.data, (d: any) => d.value);
+  const total = d3.sum(this.data, (d: any) => d.percentage);
 
   const arcs = this.svg.selectAll('path')
     .data(pie(this.data))
@@ -101,20 +105,19 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
     .attr('fill', (d: any) => color(d.data.label))
     .attr('stroke', 'white')
     .style('stroke-width', '2px')
-    .on('mouseover', (event: MouseEvent, d: any) => {
-      const percent = ((d.value / total) * 100).toFixed(1);
+    .on('mouseover', (event: MouseEvent, d: any) => {     
       tooltip
         .html(`
           <strong>${d.data.label}</strong><br>
-          ${percent}%<br>
-          ${d.data.records ?? 0} registros
+          ${d.data.percentage}%<br>
+          ${d.data.count ?? 0} registros
         `)
         .style('opacity', 1);
     })
     .on('mousemove', (event: MouseEvent) => {
       tooltip
-        .style('left', event.offsetX + 15 + 'px')
-        .style('top', event.offsetY - 20 + 'px');
+        .style('left', event.offsetX + 10 + 'px')
+        .style('top', event.offsetY + 10 + 'px');
     })
     .on('mouseout', () => {
       tooltip.style('opacity', 0);
@@ -122,8 +125,8 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
 
   if (this.showLabels) {
     const labelArc = d3.arc<any>()
-      .innerRadius(this.radius * 0.7)
-      .outerRadius(this.radius * 0.7);
+      .innerRadius(this.radius * 0.6)
+      .outerRadius(this.radius * 0.6);
 
     this.svg.selectAll('text')
       .data(pie(this.data))
@@ -132,6 +135,6 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
       .attr('text-anchor', 'middle')
       .attr('font-size', '1.2em')
       .attr('fill', '#000')
-      .text((d: any) => `${d.data.label} (${d.data.value}%)`);
+      .text((d: any) => `${d.data.label} (${d.data.percentage}%)`);
   }
 }}
