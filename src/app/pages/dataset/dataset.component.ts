@@ -4,6 +4,8 @@ import { ContainerComponent } from '../../components/container/container.compone
 import { FormsModule } from '@angular/forms';
 import { DatasetStore } from './dataset.store';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ProcessService } from '../../services/process.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dataset',
@@ -16,7 +18,7 @@ export class DatasetComponent {
   selectedFile?: File;
   description = signal('');
   Object = Object;
-  constructor(public datasetStore: DatasetStore, private snackBar: MatSnackBar) { 
+  constructor(public datasetStore: DatasetStore, private snackBar: MatSnackBar, private processService: ProcessService,  private router: Router) { 
     this.datasetStore.reset();
   }
 
@@ -30,15 +32,29 @@ export class DatasetComponent {
   }
 
   onProcess(): void {
-    this.snackBar.open('Acción de procesamiento iniciada ✅', 'Cerrar', {
-      duration: 100000,              // duración en milisegundos
-      horizontalPosition: 'right', // puede ser 'left', 'center', 'right'
-      verticalPosition: 'top',     // puede ser 'top' o 'bottom'
-    });
-  }
+    this.processService.processDataset(this.datasetStore.dataset_id()).subscribe();
+    
+      const snack = this.snackBar.open('Acción de procesamiento iniciada correctamente', 'Ir al inicio', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
+
+      let actionClicked = false;
+
+      snack.onAction().subscribe(() => {
+        actionClicked = true;
+        this.router.navigate(['/status']);
+      });
+
+      snack.afterDismissed().subscribe(() => {
+        if (!actionClicked) {
+          this.router.navigate(['/status']);
+        }
+      });
+    }
 
   onDelete(): void {
-    console.log("liminar", this.datasetStore.dataset_id())
     if (this.datasetStore.dataset_id() != 0) {
       this.datasetStore.deleteDataset(this.datasetStore.dataset_id());
       this.description.set("");

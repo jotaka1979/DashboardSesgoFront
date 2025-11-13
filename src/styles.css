@@ -8,21 +8,23 @@ body {
   @apply bg-gray-100 text-gray-900;
 }
 
-/* Estilos base del snackbar */
+
 .mat-mdc-snack-bar-container {
-  background-color: rgba(30, 30, 30, 0.95) !important; /* fondo oscuro semiopaco */
+  background-color: rgba(30, 30, 30, 0.95) !important;
   color: #fff !important;
-  border-radius: 0.5rem !important; /* esquinas suaves */
+  border-radius: 0.5rem !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Texto interno */
 .mat-mdc-snack-bar-label {
   font-size: 0.95rem;
   font-weight: 500;
 }
 
-/* Botón de acción (el "Cerrar") */
 .mat-mdc-snack-bar-action {
-  color: #90cdf4 !important; /* azul claro */
+  color: #096299 !important; 
+}
+
+.mat-mdc-button .mdc-button__label{
+  color: #ffffff !important; 
 }

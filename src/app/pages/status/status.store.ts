@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { StatusService } from './status.service';
+import { StatusService } from '../../services/status.service';
 import { Dataset, DatasetSelect } from '../../models/dataset';
 
 @Injectable({
@@ -10,8 +10,9 @@ export class StatusStore {
   allDatasets = signal<Dataset[]>([]);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
+  dataset = signal<Dataset>({ id: 0, name: "", description: "", status: "", table_name: "" });
 
-  constructor(private statusService: StatusService) {}
+  constructor(private statusService: StatusService) { }
 
   loadDatasets() {
     this.loading.set(true);
@@ -39,6 +40,17 @@ export class StatusStore {
       error: (err) => {
         this.error.set('Error al obtener los datasets');
         this.loading.set(false);
+      }
+    });
+  }
+
+  loadDataset(dataset_id: number) {
+    this.statusService.getDataset(dataset_id).subscribe({
+      next: (data) => {       
+        this.dataset.set((data as unknown as Dataset));
+      },
+      error: (err) => {
+        this.error.set('Error al obtener los datasets');
       }
     });
   }

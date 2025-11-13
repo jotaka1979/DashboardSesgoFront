@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpEventType } from '@angular/common/http';
-import { DashboardService } from './dashboard.service';
 import { Distribution, DistributionResult } from '../../models/distribution';
+import { DashboardService } from  '../../services/dashboard.service';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardStore {  

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
@@ -12,10 +12,9 @@ import { Dataset } from '../../models/dataset';
   templateUrl: './dataset-list-modal.html',
 })
 export class DatasetListModalComponent {
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public datasets: Dataset[],
-    private dialogRef: MatDialogRef<DatasetListModalComponent>
-  ) {}
+
+  public datasets: Dataset[] = inject(MAT_DIALOG_DATA);
+  private dialogRef = inject(MatDialogRef<DatasetListModalComponent>);  
 
   close(): void {
     this.dialogRef.close();

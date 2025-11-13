@@ -1,8 +1,9 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
-import { DatasetService } from './dataset.service';
+import { DatasetService } from '../../services/dataset.service';
 import { DatasetUploadResult } from '../../models/dataset.upload.result';
 import { Observable } from 'rxjs';
+import { Dataset } from '../../models/dataset';
 
 @Injectable({ providedIn: 'root' })
 export class DatasetStore {

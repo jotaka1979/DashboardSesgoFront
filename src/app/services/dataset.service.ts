@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class DatasetService {
@@ -33,9 +33,8 @@ export class DatasetService {
     return this.http.request(req);
   }
 
-    deleteDataset(dataset_id: number): Observable<HttpEvent<any>> {
+  deleteDataset(dataset_id: number): Observable<HttpEvent<any>> {
     const req = new HttpRequest('DELETE', `${this.apiUrl}/${dataset_id}`);
-
     return this.http.request(req);
   }
 }

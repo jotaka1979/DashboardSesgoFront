@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../environments/environment';
 console.log(environment.apiUrl);
 @Injectable({
   providedIn: 'root'
@@ -17,5 +17,9 @@ export class StatusService {
 
   getAllDatasets(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}`);
+  }
+
+  getDataset(dataset_id: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${dataset_id}`);
   }
 }

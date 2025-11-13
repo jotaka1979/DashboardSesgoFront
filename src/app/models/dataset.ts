@@ -3,8 +3,8 @@ export interface Dataset {
   name: string;
   description: string;
   status:string;
-  creationdate:Date;
-  updatedate:Date;
+  creationdate?:Date;
+  updatedate?:Date;
   table_name:string;
 }
 

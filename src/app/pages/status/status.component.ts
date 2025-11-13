@@ -26,7 +26,7 @@ export class StatusComponent implements OnInit {
 
   gotodashboard(id: Number) {
     console.log('Navegando al dashboard con dataset:', id);
-this.router.navigate([`/dashboard/${id}`]);
+    this.router.navigate([`/dashboard/${id}`]);
   }
 
   openDatasetModal() {
@@ -39,6 +39,7 @@ this.router.navigate([`/dashboard/${id}`]);
 
     dialogRef.afterClosed().subscribe((selectedDataset) => {
       if (selectedDataset) {
+        this.router.navigate([`/dashboard/${selectedDataset.id}`]);
         console.log('Dataset seleccionado:', selectedDataset);
       }
     });
