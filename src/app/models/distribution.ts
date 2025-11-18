@@ -6,5 +6,7 @@ export interface Distribution {
 }
 
 export interface DistributionResult {
-  result: Distribution[]; 
+  hate: Distribution[]; 
+  type: Distribution[]; 
+  intensity: Distribution[]; 
 }

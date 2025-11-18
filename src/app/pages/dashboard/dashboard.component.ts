@@ -22,16 +22,39 @@ import { ProcessService } from '../../services/process.service';
 export class DashboardComponent implements OnInit {
 
   datasetId: number = 0
-  chartData = signal<Distribution[]>([]);
+  hateData = signal<Distribution[]>([]);
+  typeData = signal<Distribution[]>([]);
+  intensityData = signal<Distribution[]>([]);
+
   private statusStore = inject(StatusStore);
 
   constructor(public store: DashboardStore, private route: ActivatedRoute, public datasetStore: DatasetStore, private snackBar: MatSnackBar, private router: Router, private dialog: MatDialog, private processService: ProcessService) {
     effect(() => {
       const data = this.store.hateResult();
-      this.chartData.set(
+      this.hateData.set(
         data.map(item => ({
           ...item,
           color: item.label === 'Odio' ? '#4CAF50' : '#3688f4',
+        }))
+      );
+    });
+
+    effect(() => {
+      const data = this.store.typeResult();
+      this.typeData.set(
+        data.map(item => ({
+          ...item,
+          color: '#f0b342ff',
+        }))
+      );
+    });
+
+    effect(() => {
+      const data = this.store.intensityResult();
+      this.intensityData.set(
+        data.map(item => ({
+          ...item,
+          color: '#de85f5ff',
         }))
       );
     });

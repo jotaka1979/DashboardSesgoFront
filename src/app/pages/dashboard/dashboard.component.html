@@ -35,20 +35,27 @@
   <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 p-4">
 
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
-      <das-pie-chart [data]="chartData()" [width]="300" [height]="300" [innerRadius]="80" [showLabels]="true"
+      <das-pie-chart [data]="hateData()" [width]="300" [height]="300" [innerRadius]="80" [showLabels]="true"
         [isLoading]="store.loadingHate()" chartTitle="Distribución de Odio y No Odio">
       </das-pie-chart>
     </div>
 
 
-    <div class="p-8 bg-white rounded-xl shadow hover:shadow-lg transition col-span-2">
-      <das-bar-chart [data]="[
-          { label: 'Dummy', value: 150 },
-          { label: 'Dummy', value: 20 },
-          { label: 'Dummy', value: 5 }
-          
-        ]" [width]="600" [height]="300">
+    <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-2">
+      <das-bar-chart [data]="typeData()"  [isLoading]="store.loadingHate()" [width]="900" [height]="300" chartTitle="Distribución de Tipo de Odio">
       </das-bar-chart>
     </div>
+  </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 p-4">
+    <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-2">
+      <das-bar-chart [data]="intensityData()"  [isLoading]="store.loadingHate()" [width]="900" [height]="300" chartTitle="Distribución de Intensidad de Odio">
+      </das-bar-chart>
+    </div>
+    <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
+      
+    </div>
+
+
+
   </div>
 </das-container>

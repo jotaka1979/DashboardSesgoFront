@@ -1,24 +1,27 @@
-import { Component, Input, ElementRef, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import { Component, Input, ElementRef, OnChanges, SimpleChanges, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import * as d3 from 'd3';
+import { Distribution } from '../../models/distribution';
 
 @Component({
   selector: 'das-bar-chart',
   standalone: true,
   templateUrl: './bar-chart.component.html',
-  styleUrls: ['./bar-chart.component.css']
+  styleUrls: ['./bar-chart.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BarChartComponent implements AfterViewInit, OnChanges {
 
-  @Input() data: { label: string; value: number; color?: string }[] = [];
-  @Input() width = 600;
-  @Input() height = 300;
-  @Input() title = '';
+  @Input() data: Distribution[] = [];
+  @Input() width = 0;
+  @Input() height = 0;
+  @Input() chartTitle = '';
+  @Input() isLoading = false;
 
   private svg: any;
   private element: any;
-  private margin = { top: 30, right: 20, bottom: 30, left: 100 };
+  private margin = { top: 30, right: 40, bottom: 40, left: 140 };
 
-  constructor(private el: ElementRef) {}
+  constructor(private el: ElementRef) { }
 
   ngAfterViewInit(): void {
     this.element = this.el.nativeElement.querySelector('.bar-chart');
@@ -26,9 +29,9 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.svg && changes['data']) {
-      this.updateChart();
-    }
+    if (changes['data'] && this.element) {   
+    this.createChart();
+  }
   }
 
   private createChart(): void {
@@ -55,8 +58,8 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
     const chartHeight = height - margin.top - margin.bottom;
 
     const x = d3.scaleLinear()
-      .domain([0, d3.max(this.data, d => d.value)!])
-      .range([0, chartWidth]);
+      .domain([0, d3.max(this.data, d => d.count)!])
+      .range([0, chartWidth *0.95]);
 
     const y = d3.scaleBand()
       .domain(this.data.map(d => d.label))
@@ -76,16 +79,17 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
       .attr('transform', `translate(0,${chartHeight})`)
       .call(d3.axisBottom(x).ticks(5))
       .selectAll('text')
-      .attr('font-size', '0.8em');
+      .attr('font-size', '0.9em');
 
     this.svg.append('g')
       .attr('class', 'y-axis')
       .call(d3.axisLeft(y).tickSize(0))
       .selectAll('text')
-      .attr('font-size', '0.9em');
+      .attr('font-size', '1.2em')
+      .style('font-weight', '600');;
 
     // Barras
-    const bars = this.svg.selectAll('.bar')
+    this.svg.selectAll('.bar')
       .data(this.data)
       .join('rect')
       .attr('class', 'bar')
@@ -95,17 +99,17 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
       .attr('x', 0)
       .transition()
       .duration(600)
-      .attr('width', (d: { value: d3.NumberValue; }) => x(d.value));
+      .attr('width', (d: { count: d3.NumberValue; }) => x(d.count));
 
     // Etiquetas de valor
     this.svg.selectAll('.label')
       .data(this.data)
       .join('text')
       .attr('class', 'label')
-      .attr('y', (d: { label: string; }) => (y(d.label)! + y.bandwidth() / 2) + 4)
-      .attr('x', (d: { value: d3.NumberValue; }) => x(d.value) + 5)
+      .attr('y', (d: { label: string; }) => y(d.label)! + y.bandwidth() / 2 + 4)
+      .attr('x', (d: { count: d3.NumberValue; }) => x(d.count) + 5)
       .attr('font-size', '0.85em')
       .attr('fill', '#333')
-      .text((d: { value: any; }) => d.value);
+      .text((d: { count: any; }) => d.count);
   }
 }

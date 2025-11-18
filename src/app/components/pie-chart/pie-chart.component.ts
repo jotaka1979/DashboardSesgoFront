@@ -32,8 +32,7 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data'] && this.element) {
-    // limpia y vuelve a crear el gráfico completo
+    if (changes['data'] && this.element) {   
     this.createChart();
   }
   }
