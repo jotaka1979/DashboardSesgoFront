@@ -7,7 +7,7 @@ import { Distribution } from '../../models/distribution';
   standalone: true,
   templateUrl: './pie-chart.component.html',
   styleUrls: ['./pie-chart.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PieChartComponent implements AfterViewInit, OnChanges {
 
@@ -38,6 +38,7 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
   }
 
   private createChart(): void {
+    d3.select(this.element).select('svg').remove();
     if (!this.data?.length) return;
 
     const { width, height } = this;
@@ -108,7 +109,6 @@ export class PieChartComponent implements AfterViewInit, OnChanges {
       tooltip
         .html(`
           <strong>${d.data.label}</strong><br>
-          ${d.data.percentage}%<br>
           ${d.data.count ?? 0} registros
         `)
         .style('opacity', 1);

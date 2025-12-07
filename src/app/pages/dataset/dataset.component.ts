@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dataset',
-  imports: [CommonModule, ContainerComponent, FormsModule, CommonModule, MatSnackBarModule],
+  imports: [CommonModule, ContainerComponent, FormsModule, MatSnackBarModule],
   templateUrl: 'dataset.component.html',
   styleUrl: './dataset.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

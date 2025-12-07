@@ -10,7 +10,6 @@ export class ProcessService {
     constructor(private http: HttpClient) { }
 
     processDataset(dataset_id: number): Observable<HttpEvent<any>> {
-        console.log("llama", dataset_id)
         const req = new HttpRequest('POST', `${this.apiUrl}/${dataset_id}`, null, {
             reportProgress: true,
         });

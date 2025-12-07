@@ -9,21 +9,31 @@ export class DashboardStore {
   hateResult = signal<Distribution[]>([]);
   typeResult = signal<Distribution[]>([]);
   intensityResult = signal<Distribution[]>([]);
+  languageResult = signal<Distribution[]>([]);
+  userResult = signal<Distribution[]>([]);
+  hashtagResult = signal<Distribution[]>([]);
+  emojiResult = signal<Distribution[]>([]);
+  wordResult = signal<Distribution[]>([]);
 
   error = signal<any | null>(null);
   dataset_id = signal(0);
 
   constructor(private dashboardService: DashboardService) { }
 
-  loadHateDistribution( dataset_id: number) {
+  loadHateDistribution( payload:any) {    
     this.loadingHate.set(true);
     this.hateResult.set([]);
     this.typeResult.set([]);
     this.intensityResult.set([]);
+    this.languageResult.set([]);
+    this.userResult.set([]);
+    this.hashtagResult.set([]);
+    this.emojiResult.set([]);
+    this.wordResult.set([]);
     this.error.set(null);
 
 
-    this.dashboardService.getHateDistribution({dataset_id}).subscribe({
+    this.dashboardService.getHateDistribution(payload).subscribe({
       next: (event) => {
         switch (event.type) {
           case HttpEventType.Response:
@@ -31,6 +41,11 @@ export class DashboardStore {
             this.hateResult.set(body.hate);    
             this.typeResult.set(body.type);
             this.intensityResult.set(body.intensity);
+            this.languageResult.set(body.language);
+            this.userResult.set(body.user);     
+            this.hashtagResult.set(body.hashtag);
+            this.emojiResult.set(body.emoji);      
+            this.wordResult.set(body.word);
             this.loadingHate.set(false);
             break;
         }
@@ -48,6 +63,11 @@ export class DashboardStore {
     this.hateResult.set([]);
     this.typeResult.set([]);
     this.intensityResult.set([]);
+    this.languageResult.set([]);
+    this.userResult.set([]);
+    this.hashtagResult.set([]);
+    this.emojiResult.set([]);
+    this.wordResult.set([]);
     this.error.set(null);
   }
 }

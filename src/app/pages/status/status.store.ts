@@ -20,7 +20,6 @@ export class StatusStore {
 
     this.statusService.getDatasets().subscribe({
       next: (data) => {
-        console.log(data)
         this.datasets.set((data as unknown as DatasetSelect).results);
         this.loading.set(false);
       },
@@ -34,7 +33,6 @@ export class StatusStore {
   loadAllDatasets() {
     this.statusService.getAllDatasets().subscribe({
       next: (data) => {
-        console.log(data)
         this.allDatasets.set((data as unknown as DatasetSelect).results);
       },
       error: (err) => {

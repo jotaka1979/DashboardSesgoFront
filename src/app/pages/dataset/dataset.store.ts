@@ -58,7 +58,6 @@ export class DatasetStore {
         if (event.type === HttpEventType.Response) {
           this.result.set(null);
           this.dataset_id.set(0);
-          console.log('Eliminado correctamente:', event.body);
         }
       },
       error: err => {

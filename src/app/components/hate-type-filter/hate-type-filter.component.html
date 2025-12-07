@@ -1,0 +1,14 @@
+<div class="flex flex-col gap-0.5 mb-2 p-1 w-40 text-xs leading-tight">
+  <label *ngFor="let type of hateTypes" class="flex items-center gap-1">
+    <input
+      type="radio"
+      class="h-3 w-3"
+      name="hateType"
+      [ngModel]="hateType()"
+      (ngModelChange)="setFilter($event)"
+      [value]="type.value"
+      [disabled]="isDisabled"
+    >
+    {{ type.label }}
+  </label>
+</div>

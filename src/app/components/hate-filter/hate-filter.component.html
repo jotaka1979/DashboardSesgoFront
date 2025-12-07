@@ -1,0 +1,14 @@
+<div class="flex flex-col gap-0.5 mb-2 p-1 w-40 text-xs leading-tight">
+  <label>
+    <input type="radio" name="hate"  [value]=null (change)="setFilter(null)" class="h-3 w-3" checked>
+    Todos
+  </label>
+  <label>
+    <input type="radio" name="hate" [value]="true" (change)="setFilter(true)" class="h-3 w-3">
+    Odio
+  </label>
+  <label>
+    <input type="radio" name="hate" [value]="false" (change)="setFilter(false)" class="h-3 w-3">
+    No Odio
+  </label>
+</div>
