@@ -40,7 +40,7 @@
 
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
       <das-pie-chart [data]="hateData()" [width]="300" [height]="250" [innerRadius]="80" [showLabels]="true"
-        [isLoading]="store.loadingHate()" chartTitle="Distribución de Odio y No Odio">
+        [isLoading]="store.loadingHate()"  [chartTitle]="hateChartTitle">
       </das-pie-chart>
     </div>
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">

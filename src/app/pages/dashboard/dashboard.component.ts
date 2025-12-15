@@ -157,6 +157,10 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  sum(ds:Distribution[]){
+    return ds.reduce((acc, item) => acc + item.count, 0);
+  }
+
   onProcess(): void {
     this.processService.processDataset(this.datasetId()).subscribe();
 
@@ -225,5 +229,9 @@ export class DashboardComponent implements OnInit {
   onBarClicked(item: Distribution) {
     this.languageFilter.set(item.code);
   }
+
+  get hateChartTitle(): string {
+  return `Distribución de Odio y No Odio (${this.sum(this.store.hateResult())} registros)`;
+}
 
 }
