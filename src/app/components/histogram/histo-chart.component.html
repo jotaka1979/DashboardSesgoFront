@@ -1,0 +1,20 @@
+<div>
+    <h1>{{chartTitle}}</h1>
+</div>
+@if (isLoading) {
+<div class="flex flex-col items-center justify-center  mt-10">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+    <p class="mt-3 text-gray-500 text-sm">Cargando datos...</p>
+</div>
+}
+<div class="flex w-full h-full">
+  <div #container class="histo-chart relative w-[90%]">
+  </div>
+
+  <div class="w-[20%]">
+    @if (!isLoading) {
+    <p>Media:{{data.mean}}</p>
+    <p>Mediana:{{data.median}}</p>
+    <p>STD:{{data.std}}</p>}
+  </div>
+</div>

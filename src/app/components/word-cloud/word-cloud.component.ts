@@ -12,12 +12,12 @@ import { Distribution } from '../../models/distribution';
 })
 export class WordCloudComponent implements AfterViewInit, OnChanges {
   @Input() data: Distribution[] = [];
-
+  @Input() chartTitle = '';
   @Input() height = 250;
   @Input() isLoading = false;
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
   width = 0;
-  private element: any; 
+  private element: any;
 
   constructor(private el: ElementRef) {
     effect(() => {
@@ -28,9 +28,9 @@ export class WordCloudComponent implements AfterViewInit, OnChanges {
   }
 
   ngAfterViewInit() {
-       this.width = this.container.nativeElement.clientWidth;
-  this.createWordCloud();
-    
+    this.width = this.container.nativeElement.clientWidth;
+    this.createWordCloud();
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -41,13 +41,13 @@ export class WordCloudComponent implements AfterViewInit, OnChanges {
   }
 
   clear() {
-    const element = this.el.nativeElement.querySelector('#wordCloud');
-    element.innerHTML = "";
+    const svg = this.container.nativeElement.querySelector('svg');
+    if (svg) svg.remove();
   }
 
   createWordCloud() {
 
-    const element = this.el.nativeElement.querySelector('#wordCloud');
+    const element = this.container.nativeElement;
     const width = this.width;
     const height = this.height;
 
@@ -56,13 +56,13 @@ export class WordCloudComponent implements AfterViewInit, OnChanges {
 
     const scale = d3.scaleLinear()
       .domain([min, max])
-      .range([12, 50]); // Fuente mínima y máxima
+      .range([10, 50]);
 
     const layout = cloud()
       .size([width, height])
-      .words(this.data.map(d => ({ text: d.label, size: scale(d.count) })))
+      .words(this.data.map(d => ({ text: d.label, real: d.count, size: scale(d.count) })))
       .padding(5)
-      .rotate(() => ~~(Math.random() * 2) * 90) // 0 o 90 grados
+      .rotate(() => ~~(Math.random() * 2) * 90)
       .fontSize((d: any) => d.size)
       .on('end', (data) => this.drawCloud(data, element, width, height));
 
@@ -71,7 +71,7 @@ export class WordCloudComponent implements AfterViewInit, OnChanges {
 
 
   drawCloud(data: any, element: HTMLElement, width: number, height: number) {
-    const tooltip = d3.select('#tooltip');
+    const tooltip = d3.select(element).select('.tooltip');
     d3.select(element)
       .append('svg')
       .attr('width', width)
@@ -87,14 +87,20 @@ export class WordCloudComponent implements AfterViewInit, OnChanges {
       .attr('transform', (d: any) => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
       .text((d: any) => d.text)
       .on('mouseover', function (event: MouseEvent, d: any) {
-        tooltip.style('opacity', 1)
+        tooltip
+          .style('opacity', '1')
           .html(`
-          <b>${d.text}</b><br>
-          Frecuencia: ${d.size}
-        `);
+      <b>${d.text}</b><br>
+      Frecuencia: ${d.real}
+    `);
+      })
+      .on('mousemove', function (event: MouseEvent) {
+        tooltip
+          .style('left', event.offsetX + 10 + 'px')
+          .style('top', event.offsetY + 10 + 'px');
       })
       .on('mouseout', function () {
-        tooltip.style('opacity', 0);
+        tooltip.style('opacity', '0');
       });
   }
 

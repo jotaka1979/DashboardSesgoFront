@@ -1,46 +1,33 @@
 <das-container>
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-6 p-4">
-   <div class="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition col-span-1">
-    <div class="flex flex-col gap-2 mb-2 p-2 w-full mx-auto">
-
-      <button
-        (click)="onProcess()"
-        [disabled]="!processEnabled()"
-        class="py-1.5 px-3 rounded-md text-sm font-medium
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-12 p-4">
+    <div class="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition col-span-1">
+      <div class="flex flex-col gap-2 mb-2 p-2 w-full mx-auto">
+        <button (click)="onProcess()" [disabled]="!processEnabled()" class="py-1.5 px-2 rounded-md text-sm font-medium
                bg-softBlue text-white hover:bg-blue-700
                disabled:bg-gray-300 disabled:cursor-not-allowed
                transition-all duration-200">
-        Procesar
-      </button>
-
-      <button
-        (click)="openDatasetModal()"
-        class="py-1.5 px-3 rounded-md text-sm font-medium
+          Procesar
+        </button>
+        <button (click)="openDatasetModal()" class="py-1.5 px-2 rounded-md text-sm font-medium
                bg-softBlue text-white hover:bg-blue-700
                disabled:bg-gray-300 disabled:cursor-not-allowed
                transition-all duration-200">
-        Buscar
-      </button>
-
-      <button
-        (click)="onDelete()"
-        class="py-1.5 px-3 rounded-md text-sm font-medium
+          Buscar
+        </button>
+        <button (click)="onDelete()" class="py-1.5 px-2 rounded-md text-sm font-medium
                bg-softRed text-white hover:bg-red-700
                disabled:bg-gray-300 disabled:cursor-not-allowed
                transition-all duration-200">
-        Eliminar
-      </button>
-
+          Eliminar
+        </button>
+      </div>
     </div>
-  </div>
-
-    <div class="p-2 bg-white rounded-xl shadow hover:shadow-lg transition col-span-2">
+    <div class="p-2 bg-white rounded-xl shadow hover:shadow-lg transition col-span-3">
       <h2 class="text-m font-semibold mt-3">{{dataset().name }}</h2>
       <p class="text-sm text-gray-500">{{ dataset().description }}</p>
       <p class="text-xs text-blue-500 font-medium mt-2">{{ dataset().status }}</p>
       <p class="text-xs text-gray-400 mt-1">Tabla: {{ dataset().table_name }}</p>
     </div>
-
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
       <das-hate-filter (filterChange)="hateFilter.set($event)"> </das-hate-filter>
     </div>
@@ -49,26 +36,30 @@
       </das-hate-type-filter>
     </div>
   </div>
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 p-4">
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 p-4">
 
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
       <das-pie-chart [data]="hateData()" [width]="300" [height]="250" [innerRadius]="80" [showLabels]="true"
         [isLoading]="store.loadingHate()" chartTitle="Distribución de Odio y No Odio">
       </das-pie-chart>
     </div>
-
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
-      <das-bar-chart [data]="typeData()" [isLoading]="store.loadingHate()" class="w-full md:w-1/2 lg:w-1/3"
-        [height]="250" chartTitle="Distribución de Tipo de Odio">
+      <das-bar-chart [data]="store.typeResult()" [isLoading]="store.loadingHate()" class="w-full md:w-1/2 lg:w-1/3"
+        [height]="250" chartTitle="Distribución de Tipo de Odio" color= '#f0b342ff'>
       </das-bar-chart>
     </div>
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
-      <das-bar-chart [data]="intensityData()" [isLoading]="store.loadingHate()" [height]="250"
-        chartTitle="Distribución de Intensidad de Odio">
+      <das-bar-chart [data]="store.intensityResult()" [isLoading]="store.loadingHate()" [height]="250"
+        chartTitle="Distribución de Intensidad de Odio" color='#dbb0e6ff'>
+      </das-bar-chart>
+    </div>
+    <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
+      <das-bar-chart [data]="store.subtypeResult()" [isLoading]="store.loadingHate()" [height]="250"
+        chartTitle="Distribución de Subtipo de Odio" color= '#ef6060ff'>
       </das-bar-chart>
     </div>
   </div>
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 p-4">
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 p-4">
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
       <das-bar-chart [data]="languageData()" [isLoading]="store.loadingHate()" [height]="250"
         chartTitle="Distribución de Idioma" (barClick)="onBarClicked($event)">
@@ -80,26 +71,38 @@
       </das-bar-chart>
     </div>
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
-      <das-bar-chart [data]="hashtagData()" [isLoading]="store.loadingHate()" [height]="250" [extraLabelSpace]="true"
+      <das-bar-chart [data]="hashtagData()" [isLoading]="store.loadingHate()" [height]="250" [extraLabelSpace]="true" [ticks]="3"
         chartTitle="Distribución de Hashtag">
       </das-bar-chart>
     </div>
-
-
-
-  </div>
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 p-4">
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-1">
       <das-bar-chart [data]="emojiData()" [isLoading]="store.loadingHate()" [height]="250" [zoom]="true"
         chartTitle="Distribución de Emojis">
       </das-bar-chart>
     </div>
+  </div>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 p-4">
     <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-2">
-      <das-word-cloud [data]="wordData()"  [isLoading]="store.loadingHate()" [height]="250">
-
+      <das-word-cloud [data]="wordData()" [isLoading]="store.loadingHate()" [height]="250"
+        chartTitle="Nube de Palabras">
       </das-word-cloud>
-
+    </div>
+    <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-2">
+      <das-word-cloud [data]="entityData()" [isLoading]="store.loadingHate()" [height]="250"
+        chartTitle="Nube de Entidades">
+      </das-word-cloud>
     </div>
   </div>
-
+   <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 p-4">
+        <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-2">
+      <das-histo-chart [data]="store.rawLengthResult()" [isLoading]="store.loadingHate()"
+        chartTitle="Histograma de Longitud Original">
+      </das-histo-chart >
+    </div>
+    <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition col-span-2">
+      <das-histo-chart [data]="store.cleanedLengthResult()" [isLoading]="store.loadingHate()"
+        chartTitle="Histograma de Longitud sin Ruido">
+      </das-histo-chart >
+    </div>
+   </div>
 </das-container>

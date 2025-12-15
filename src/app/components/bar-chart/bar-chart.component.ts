@@ -17,6 +17,8 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
   @Input() isLoading = false;
   @Input() extraLabelSpace = false;
   @Input() zoom = false;
+  @Input() ticks = 5;
+  @Input() color = '';
   @Output() barClick = new EventEmitter<Distribution>();
 
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
@@ -30,8 +32,10 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
   constructor(private el: ElementRef) {
     effect(() => {
       const data = this.isLoading;
-      if (this.isLoading)
+      if (this.isLoading) {
         d3.select(this.element).select('svg').remove();
+        d3.select(this.element).select('.no-data').remove();
+      }
     });
   }
 
@@ -58,8 +62,22 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
   }
 
   private createChart(): void {
-    d3.select(this.element).select('svg').remove();
-    if (!this.width || !this.data?.length) return;
+    const container = d3.select(this.element);
+    container.select('svg').remove();
+    container.select('.no-data').remove();
+    if (this.isLoading)
+      return;
+
+    if (!this.width || !this.data?.length) {
+      container.append('div')
+        .attr('class', 'no-data')
+        .style('text-align', 'center')
+        .style('padding', '20px')
+        .style('color', '#666')
+        .style('font-size', '14px')
+        .text('No hay datos para mostrar');
+      return;
+    }
 
     this.margin.left = this.extraLabelSpace ? 180 : 100;
     const { width, height, margin } = this;
@@ -98,10 +116,6 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
       .range([0, chartHeight])
       .padding(0.2);
 
-    const color = d3.scaleOrdinal<string>()
-      .domain(this.data.map(d => d.label))
-      .range(this.data.map((d, i) => d.color || d3.schemeTableau10[i % 10]));
-
     // Ejes
     this.svg.selectAll('.x-axis').remove();
     this.svg.selectAll('.y-axis').remove();
@@ -112,7 +126,7 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
         .attr('transform', `translate(0,${chartHeight})`)
         .call(
           d3.axisBottom(x)
-            .ticks(5)
+            .ticks(this.ticks)
             .tickFormat((d: d3.NumberValue) => {
               const value = Number(d);
 
@@ -129,35 +143,35 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
       .attr('class', 'y-axis')
       .call(d3.axisLeft(y).tickSize(0))
 
-const yLabels = yAxis.selectAll('text')
-  .attr('x', -5)
-  .attr('font-size', '1.2em')
-  .style('cursor', 'pointer')
-  .style('font-weight', (d: any) => {
-    const item = this.data.find(x => x.label === d);
-    return item?.selected ? 'bold' : '400';
-  })
-  .on('click', (event: any, label: string) => {
-    event.stopPropagation();
-    const item = this.data.find(x => x.label === label);
-    if (item) this.barClick.emit(item);
-  });
+    const yLabels = yAxis.selectAll('text')
+      .attr('x', -5)
+      .attr('font-size', '1.2em')
+      .style('cursor', 'pointer')
+      .style('font-weight', (d: any) => {
+        const item = this.data.find(x => x.label === d);
+        return item?.selected ? 'bold' : '400';
+      })
+      .on('click', (event: any, label: string) => {
+        event.stopPropagation();
+        const item = this.data.find(x => x.label === label);
+        if (item) this.barClick.emit(item);
+      });
 
-if (this.zoom) {
-  yLabels
-    .on('mouseover.zoom', function (this: SVGTextElement) {
-      d3.select(this)
-        .transition()
-        .duration(150)
-        .attr('transform', 'scale(2.5)');
-    })
-    .on('mouseout.zoom', function (this: SVGTextElement) {
-     d3.select(this)
-        .transition()
-        .duration(150)
-        .attr('transform', 'scale(1)');
-    });
-}
+    if (this.zoom) {
+      yLabels
+        .on('mouseover.zoom', function (this: SVGTextElement) {
+          d3.select(this)
+            .transition()
+            .duration(150)
+            .attr('transform', 'scale(2.5)');
+        })
+        .on('mouseout.zoom', function (this: SVGTextElement) {
+          d3.select(this)
+            .transition()
+            .duration(150)
+            .attr('transform', 'scale(1)');
+        });
+    }
 
     // Barras
     this.svg.selectAll('.bar')
@@ -166,7 +180,11 @@ if (this.zoom) {
       .attr('class', 'bar')
       .attr('y', (d: { label: string; }) => y(d.label)!)
       .attr('height', y.bandwidth())
-      .attr('fill', (d: { label: string; }) => color(d.label)!)
+      .attr('fill', (d: Distribution, i: number) => {
+        if (this.color) return this.color;      // 🔹 color global
+        if (d.color) return d.color;            // 🔹 color por item
+        return d3.schemeTableau10[i % 10];      // 🔹 fallback
+      })
       .attr('x', 1)
       .on('click', (event: any, d: any) => {
         event.stopPropagation();

@@ -5,6 +5,7 @@ import { WordCloudComponent } from '../../components/word-cloud/word-cloud.compo
 import { ContainerComponent } from '../../components/container/container.component';
 import { HateFilterComponent } from '../../components/hate-filter/hate-filter.component';
 import { HateTypeFilterComponent } from '../../components/hate-type-filter/hate-type-filter.component';
+import { HistoChartComponent } from '../../components/histogram/histo-chart.component';
 
 
 import { DashboardStore } from './dashboard.store';
@@ -16,10 +17,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { DatasetListModalComponent } from '../../components/dataset-list-modal/dataset-list-modal';
 import { ProcessService } from '../../services/process.service';
+import { MessageLength } from '../../models/MessageLength';
+import { Histogram } from '../../models/histogram';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [PieChartComponent, ContainerComponent, BarChartComponent, WordCloudComponent, HateFilterComponent, HateTypeFilterComponent],
+  imports: [PieChartComponent, ContainerComponent, BarChartComponent, WordCloudComponent, HateFilterComponent, HateTypeFilterComponent, HistoChartComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,16 +32,19 @@ export class DashboardComponent implements OnInit {
   datasetId = signal<number>(-1)
   hateData = signal<Distribution[]>([]);
   typeData = signal<Distribution[]>([]);
+  subtypeData = signal<Distribution[]>([]);
   intensityData = signal<Distribution[]>([]);
   languageData = signal<Distribution[]>([]);
   userData = signal<Distribution[]>([]);
   hashtagData = signal<Distribution[]>([]);
   emojiData = signal<Distribution[]>([]);
   wordData = signal<Distribution[]>([]);
+  entityData = signal<Distribution[]>([]);
+  cleanedLengthResult = signal<MessageLength[]>([])
 
   hateFilter = signal<boolean | null>(null);
   hateTypeFilter = signal<string | null>(null);
-  languageFilter= signal<string>("OTHER");
+  languageFilter = signal<string>("OTHER");
 
   private statusStore = inject(StatusStore);
 
@@ -58,32 +64,12 @@ export class DashboardComponent implements OnInit {
     });
 
     effect(() => {
-      const data = this.store.typeResult();
-      this.typeData.set(
-        data.map(item => ({
-          ...item,
-          color: '#f0b342ff',
-        }))
-      );
-    });
-
-    effect(() => {
-      const data = this.store.intensityResult();
-      this.intensityData.set(
-        data.map(item => ({
-          ...item,
-          color: '#dbb0e6ff',
-        }))
-      );      
-    });
-
-    effect(() => {
       const data = this.store.languageResult();
       this.languageData.set(
         data.map(item => ({
           ...item,
-          color:   item.label === 'Otros' ? '#959895ff' : (this.languageFilter()!="OTHER" ? (item.code==this.languageFilter() ? '#10B981' : '#A7F3D0') : '#6cb492ff'),
-           selected:  (this.languageFilter()!="OTHER" && item.code==this.languageFilter() ? true : false),
+          color: item.label === 'Otros' ? '#959895ff' : (this.languageFilter() != "OTHER" ? (item.code == this.languageFilter() ? '#10B981' : '#A7F3D0') : '#6cb492ff'),
+          selected: (this.languageFilter() != "OTHER" && item.code == this.languageFilter() ? true : false),
         }))
       );
     });
@@ -119,8 +105,17 @@ export class DashboardComponent implements OnInit {
     });
 
     effect(() => {
-      const data = this.store.wordResult();      
+      const data = this.store.wordResult();
       this.wordData.set(
+        data.map(item => ({
+          ...item,
+        }))
+      );
+    });
+
+    effect(() => {
+      const data = this.store.entityResult();
+      this.entityData.set(
         data.map(item => ({
           ...item,
         }))
@@ -145,9 +140,9 @@ export class DashboardComponent implements OnInit {
     if (this.hateFilter() === false)
       this.hateTypeFilter.set(null)
 
-    let payload :any = { "dataset_id": this.datasetId(), "hate": this.hateFilter(), "hatetype": this.hateTypeFilter() }
-    if (this.languageFilter()!="OTHER")
-      payload.language = this.languageFilter();    
+    let payload: any = { "dataset_id": this.datasetId(), "hate": this.hateFilter(), "hatetype": this.hateTypeFilter() }
+    if (this.languageFilter() != "OTHER")
+      payload.language = this.languageFilter();
     this.store.loadHateDistribution(payload);
     this.statusStore.loadDataset(this.datasetId());
     this.statusStore.loadAllDatasets();

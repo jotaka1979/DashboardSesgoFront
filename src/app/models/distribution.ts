@@ -1,3 +1,5 @@
+import { MessageLength } from "./MessageLength";
+
 export interface Distribution {
   count: number;
   label: string;
@@ -9,11 +11,16 @@ export interface Distribution {
 
 export interface DistributionResult {
   hate: Distribution[]; 
-  type: Distribution[]; 
+  type: Distribution[];
+  subtype: Distribution[]; 
   intensity: Distribution[]; 
   language: Distribution[]; 
   user: Distribution[];
   emoji: Distribution[];
   hashtag: Distribution[];
   word: Distribution[];
+  entity: Distribution[];
+  cleanedlength : MessageLength;
+  rawlength : MessageLength;
+
 }
