@@ -70,6 +70,7 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
     const container = d3.select(this.element);
     container.select('svg').remove();
     container.select('.no-data').remove();
+    container.selectAll('.histo-tooltip').remove();
     if (this.isLoading)
       return;
 
@@ -92,32 +93,50 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
       .attr('height', height)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`)
+
+    
     this.updateChart();
   }
 
  private updateChart(): void {
+  
   if (!this.histogram().length) return;
 
   const { width, height, margin } = this;
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
 
+  const tooltip = d3.select('body')
+  .append('div')
+  .attr('class', 'histo-tooltip')
+  .style('position', 'absolute')
+  .style('background', 'rgba(0,0,0,0.8)')
+  .style('color', 'white')
+  .style('padding', '6px 8px')
+  .style('border-radius', '4px')
+  .style('font-size', '12px')
+  .style('pointer-events', 'none')
+  .style('opacity', 0);
+
   // Convertimos x a número
-  const data = this.histogram().map(d => ({
+const data = this.histogram().map(d => {
+  const [x0, x1] = d.range.split('-').map(Number);
+  return {
     ...d,
-    xValue: +d.x
-  }));
+    x0,
+    x1
+  };
+});
 
   // ===== ESCALAS =====
 
   // X continua
-  const x = d3.scaleLinear()
-    .domain([
-      d3.min(data, d => d.xValue)!,
-      d3.max(data, d => d.xValue)!
-    ])
-    .nice()
-    .range([0, chartWidth]);
+const x = d3.scaleLinear()
+  .domain([
+    d3.min(data, d => d.x0)!,
+    d3.max(data, d => d.x1)!
+  ])
+  .range([0, chartWidth]);
 
     const xBand = d3.scaleBand()
   .domain(this.histogram().map(d => d.range))
@@ -130,24 +149,19 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
     .range([chartHeight, 0]);
 
   // Ancho del bin (asumimos bins equidistantes)
-  const binWidth =
-    data.length > 1
-      ? (x(data[1].xValue) - x(data[0].xValue)) * 0.9
-      : chartWidth;
+
 
   // ===== EJES =====
 
   // Eje X
 this.svg.append('g')
-  .attr('class', 'x-axis')
   .attr('transform', `translate(0,${chartHeight})`)
   .call(
-    d3.axisBottom(xBand)
-      .tickFormat(d => d)
-  )
-  .selectAll('text')
-  .attr('font-size', '0.9em')
-  .attr('text-anchor', 'middle');
+    d3.axisBottom(x)
+      .ticks(6)
+      .tickFormat(d3.format('~s'))
+  );
+
 
   // Eje Y
   this.svg.append('g')
@@ -165,15 +179,34 @@ this.svg.append('g')
 
   // ===== BARRAS =====
 
-  this.svg.selectAll('.bar')
-    .data(data)
-    .join('rect')
-    .attr('class', 'bar')
-    .attr('x', (d:any) => x(d.xValue) - binWidth / 2)
-    .attr('width', binWidth)
-    .attr('y', (d:any) => y(d.count))
-    .attr('height', (d:any) => chartHeight - y(d.count))
-    .attr('fill', (d:any) => d.color || '#69b3a2');
+this.svg.selectAll('.bar')
+  .data(data)
+  .join('rect')
+  .attr('class', 'bar')
+  .attr('x', (d:any) => x(d.x0))
+  .attr('width', (d:any) => 0.8 * (x(d.x1) - x(d.x0)))
+  .attr('y', (d:any) => y(d.count))
+  .attr('height', (d:any) => chartHeight - y(d.count))
+  .attr('fill', (d:any) => d.color || '#69b3a2')
+
+  // ===== TOOLTIP =====
+  .on('mouseover', ( event:any, d:any) => {
+    tooltip
+      .style('opacity', 1)
+      .html(`
+        <div><strong>Rango:</strong> ${d.range ?? `${d.x0}-${d.x1}`}</div>
+      <div><strong>Conteo:</strong> ${d.count ?? 0}</div>
+      `);
+  })
+  .on('mousemove', (event:any) => {
+    tooltip
+      .style('left', (event.pageX + 10) + 'px')
+      .style('top', (event.pageY - 28) + 'px');
+  })
+  .on('mouseout', () => {
+    tooltip.style('opacity', 0);
+  });
+
 
   // ===== ETIQUETAS =====
 
@@ -184,13 +217,14 @@ this.svg.append('g')
     .attr('font-size', '0.7em')
     .attr('text-anchor', 'middle')
     .text((d:any) => d.count)
-    .attr('x', (d:any) => x(d.xValue))
+    .attr('x', (d:any) => x(d.x0)+25)
     .attr('y',(d:any) => y(d.count) - 5)
     .attr('fill', '#333');
 
   // ===== LÍNEA DE LA MEDIA =====
 
   const meanX = x(this.data.mean);
+  const medianX = x(this.data.median);
 
   this.svg.append('line')
     .attr('x1', meanX)
@@ -198,7 +232,7 @@ this.svg.append('g')
     .attr('y1', 0)
     .attr('y2', chartHeight)
     .attr('stroke', 'red')
-    .attr('stroke-width', 2)
+    .attr('stroke-width', 1)
     .attr('stroke-dasharray', '6,4');
 
   // Texto de la media
@@ -207,24 +241,17 @@ this.svg.append('g')
     .attr('y', 12)
     .attr('fill', 'red')
     .attr('font-size', '0.75em')
-    .text(`μ = ${this.data.mean.toFixed(2)}`);
+    .text(`μ = ${this.data.mean.toFixed(1)}`);
 
-  // ===== DESVIACIÓN ESTÁNDAR =====
-
-  const std = this.data.std;
-
-  [this.data.mean - std, this.data.mean + std].forEach(v => {
-    const xPos = x(v);
-    if (isNaN(xPos)) return;
-
-    this.svg.append('line')
-      .attr('x1', xPos)
-      .attr('x2', xPos)
-      .attr('y1', 0)
-      .attr('y2', chartHeight)
-      .attr('stroke', '#f97316')
-      .attr('stroke-dasharray', '2,2');
-  });
+      this.svg.append('line')
+    .attr('x1', medianX)
+    .attr('x2', medianX)
+    .attr('y1', 0)
+    .attr('y2', chartHeight)
+    .attr('stroke', 'blue')
+    .attr('stroke-width', 1)
+    .attr('stroke-dasharray', '6,4');
+  
 }
 
 }
