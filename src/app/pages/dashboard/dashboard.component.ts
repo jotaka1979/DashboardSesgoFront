@@ -5,7 +5,7 @@ import { WordCloudComponent } from '../../components/word-cloud/word-cloud.compo
 import { ContainerComponent } from '../../components/container/container.component';
 import { HateFilterComponent } from '../../components/hate-filter/hate-filter.component';
 import { HateTypeFilterComponent } from '../../components/hate-type-filter/hate-type-filter.component';
-import { HistoChartComponent } from '../../components/histogram/histo-chart.component';
+import { HistoChartComponent } from '../../components/histo-chart/histo-chart.component';
 
 
 import { DashboardStore } from './dashboard.store';
@@ -18,16 +18,83 @@ import { MatDialog } from '@angular/material/dialog';
 import { DatasetListModalComponent } from '../../components/dataset-list-modal/dataset-list-modal';
 import { ProcessService } from '../../services/process.service';
 import { MessageLength } from '../../models/MessageLength';
-import { Histogram } from '../../models/histogram';
-
+import { BoxplotChartComponent } from '../../components/boxplot-chart/boxplot-chart.component';
+import { Boxplot } from '../../models/boxplot';
+import { MatTabsModule } from '@angular/material/tabs';
 @Component({
   selector: 'app-dashboard',
-  imports: [PieChartComponent, ContainerComponent, BarChartComponent, WordCloudComponent, HateFilterComponent, HateTypeFilterComponent, HistoChartComponent],
+  imports: [MatTabsModule, PieChartComponent, ContainerComponent, BarChartComponent, WordCloudComponent, HateFilterComponent, HateTypeFilterComponent, HistoChartComponent, BoxplotChartComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
+
+  public databox: Boxplot[] = [
+    {
+      category: "Político",
+      min: 10,
+      q1: 14,
+      median: 18,
+      q3: 22,
+      max: 32,
+      mean: 19
+    },
+    {
+      category: "General",
+      min: 5,
+      q1: 8,
+      median: 10,
+      q3: 14,
+      max: 18,
+      mean: 11
+    },
+    {
+      category: "Religioso",
+      min: 5,
+      q1: 8,
+      median: 10,
+      q3: 14,
+      max: 18,
+      mean: 11
+    },
+    {
+      category: "Xénofono",
+      min: 5,
+      q1: 8,
+      median: 10,
+      q3: 14,
+      max: 18,
+      mean: 11
+    },
+    {
+      category: "Misógino",
+      min: 10,
+      q1: 11,
+      median: 13,
+      q3: 15,
+      max: 17,
+      mean: 12
+    },
+    {
+      category: "Sexual",
+      min: 10,
+      q1: 11,
+      median: 13,
+      q3: 15,
+      max: 17,
+      mean: 12
+    },
+    {
+      category: "No Odio",
+      min: 3,
+      q1: 5,
+      median: 7,
+      q3: 9,
+      max: 17,
+      mean: 6
+    }
+  ];
 
   datasetId = signal<number>(-1)
   hateData = signal<Distribution[]>([]);
@@ -41,7 +108,7 @@ export class DashboardComponent implements OnInit {
   wordData = signal<Distribution[]>([]);
   entityData = signal<Distribution[]>([]);
   cleanedLengthResult = signal<MessageLength[]>([])
-
+   activeTab = signal<number>(1);
   hateFilter = signal<boolean | null>(null);
   hateTypeFilter = signal<string | null>(null);
   languageFilter = signal<string>("OTHER");
@@ -134,7 +201,7 @@ export class DashboardComponent implements OnInit {
   }
 
   dataset = this.statusStore.dataset;
-  public processEnabled = computed(() => this.dataset().status !== 'EN PROCESO');
+  public processEnabled = computed(() => this.dataset().status !== 'EN PROCESO' && this.dataset().status !== 'LISTO');
 
   loadData() {
     if (this.hateFilter() === false)
@@ -157,7 +224,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  sum(ds:Distribution[]){
+  sum(ds: Distribution[]) {
     return ds.reduce((acc, item) => acc + item.count, 0);
   }
 
@@ -231,7 +298,12 @@ export class DashboardComponent implements OnInit {
   }
 
   get hateChartTitle(): string {
-  return `Distribución de Odio y No Odio (${this.sum(this.store.hateResult())} registros)`;
-}
+    return `Distribución de Odio y No Odio (${this.sum(this.store.hateResult())} registros)`;
+  }
+
+  onTabChange(index: number) {
+    console.log('Tab activo:', index);
+     this.activeTab.set(index);
+  }
 
 }

@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, OnChanges, SimpleChanges, AfterViewInit, ChangeDetectionStrategy, effect, ViewChild, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Input, ElementRef, OnChanges, SimpleChanges, AfterViewInit, ChangeDetectionStrategy, effect, ViewChild, signal } from '@angular/core';
 import * as d3 from 'd3';
 import { Histogram } from '../../models/histogram';
 import { MessageLength } from '../../models/MessageLength';
@@ -15,9 +15,8 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
   @Input() data: MessageLength = { median: 0, mean: 0, std: 0, histogram: [] };
   @Input() height = 250;
   @Input() chartTitle = '';
-  @Input() isLoading = false;
-  @Input() extraLabelSpace = false;
-  @Input() zoom = false;
+  @Input() description = '';
+  @Input() isLoading = false;  
   @Input() ticks = 5;
 
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
@@ -120,7 +119,7 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
 
     const barWidthPercentage = 0.7;
     const offsetX = (1 - barWidthPercentage) / 2
-    // Convertimos x a número
+
     const data = this.histogram().map(d => {
       const [x0, x1] = d.range.split('-').map(Number);
       return {
@@ -132,9 +131,6 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
       };
     });
 
-    // ===== ESCALAS =====
-
-    // X continua
     const x = d3.scaleLinear()
       .domain([
         d3.min(data, d => d.x0)!,
@@ -152,12 +148,6 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
       .nice()
       .range([chartHeight, 0]);
 
-    // Ancho del bin (asumimos bins equidistantes)
-
-
-    // ===== EJES =====
-
-    // Eje X
     this.svg.append('g')
       .attr('class', 'x-axis')
       .attr('transform', `translate(0,${chartHeight})`)
@@ -170,8 +160,6 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
       .attr('font-size', '0.9em')
       .attr('text-anchor', 'middle');
 
-
-    // Eje Y
     this.svg.append('g')
       .attr('class', 'y-axis')
       .call(
@@ -185,8 +173,6 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
           })
       );
 
-    // ===== BARRAS =====
-
     this.svg.selectAll('.bar')
       .data(data)
       .join('rect')
@@ -197,7 +183,6 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
       .attr('height', (d: any) => chartHeight - y(d.count))
       .attr('fill', (d: any) => d.color || '#69b3a2')
 
-      // ===== TOOLTIP =====
       .on('mouseover', (event: any, d: any) => {
         tooltip
           .style('opacity', 1)
@@ -215,9 +200,6 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
         tooltip.style('opacity', 0);
       });
 
-
-    // ===== ETIQUETAS =====
-
     this.svg.selectAll('.label')
       .data(data)
       .join('text')
@@ -228,8 +210,6 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
       .attr('x', (d: any) => x(d.x) + 20)
       .attr('y', (d: any) => y(d.count) - 5)
       .attr('fill', '#333');
-
-    // ===== LÍNEA DE LA MEDIA =====
 
     const meanX = x(this.data.mean);
     const medianX = x(this.data.median);
@@ -242,8 +222,7 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
       .attr('stroke', 'red')
       .attr('stroke-width', 1)
       .attr('stroke-dasharray', '6,4');
-
-    // Texto de la media
+    
     this.svg.append('text')
       .attr('x', meanX + 6)
       .attr('y', 12)
@@ -258,8 +237,6 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
       .attr('y2', chartHeight)
       .attr('stroke', 'blue')
       .attr('stroke-width', 1)
-      .attr('stroke-dasharray', '6,4');
-
+      .attr('stroke-dasharray', '6,4');     
   }
-
 }

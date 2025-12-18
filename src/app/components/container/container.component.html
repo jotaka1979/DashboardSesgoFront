@@ -1,7 +1,50 @@
-<div class="w-full mx-auto px-12 py-6">
-  <button routerLink="/status" class="absolute top-4 left-2 ml-4 text-gray-600 hover:text-blue-600 transition">
-    <ng-icon name="heroHomeModern" class="w-10 h-10 scale-150"></ng-icon>
-  </button>
+<div class="w-full mx-auto px-12 ">
+  <div class=" top-4 left-2 ml-4 flex flex-col gap-4">
+    <button routerLink="/status" class="absolute top-4 left-2 ml-2 bg-white border border-gray-300 rounded-xl shadow-md
+         p-3 hover:shadow-lg hover:border-gray-400
+         transition flex items-center justify-center">
+      <ng-icon name="heroHomeModern" class="w-10 h-10 scale-150"></ng-icon>
+    </button>
+    @if (menuVisible) {
+    <button (click)="openMenu()" class=" absolute top-20 left-2  ml-2 bg-white border border-gray-300 rounded-xl shadow-md
+         p-3 hover:shadow-lg hover:border-gray-400
+         transition flex items-center justify-center">
+      <ng-icon name="heroBars3" class="w-10 h-10 scale-150"></ng-icon>
+    </button>}
+  </div>
+  @if (menuOpen()) {
+  <div class="fixed inset-0 bg-black/40 flex items-start justify-start z-40" (click)="closeMenu()">
+    <!-- Panel del menú -->
+    <div class="bg-white w-64 h-full p-6 shadow-xl" (click)="$event.stopPropagation()">
+      <!-- Botón cerrar -->
+      <button class="mb-6 text-gray-500 hover:text-red-500" (click)="closeMenu()">
+        <ng-icon name="heroXMark" class="w-8 h-8"></ng-icon>
+      </button>
+
+      <!-- Opciones -->
+      <nav class="flex flex-col gap-4">
+        @if (processVisible) {
+        <button (click)="processClick()" class="flex items-center gap-3 text-gray-700 hover:text-blue-600">
+          <ng-icon name="heroArrowPath" class="w-6 h-6"></ng-icon>
+          Procesar
+        </button>
+        }
+        <button routerLink="/profile" (click)="searchClick()"
+          class="flex items-center gap-3 text-gray-700 hover:text-blue-600">
+          <ng-icon name="heroMagnifyingGlass" class="w-6 h-6"></ng-icon>
+          Abrir otro dataset
+        </button>
+
+        <button routerLink="/settings" (click)="deleteClick()"
+          class="flex items-center gap-3 text-gray-700 hover:text-blue-600">
+          <ng-icon name="heroTrash" class="w-6 h-6"></ng-icon>
+          Eliminar dataset
+        </button>
+      </nav>
+    </div>
+  </div>
+  }
+
   <ng-content></ng-content>
   @if (loading) {
   <div class="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-sm z-50">

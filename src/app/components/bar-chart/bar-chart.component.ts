@@ -1,4 +1,18 @@
-import { Component, Input, ElementRef, OnChanges, SimpleChanges, AfterViewInit, ChangeDetectionStrategy, effect, ViewChild, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  ElementRef,
+  OnChanges,
+  SimpleChanges,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  effect,
+  ViewChild,
+  Output,
+  EventEmitter,
+  NgZone,
+  OnDestroy
+} from '@angular/core';
 import * as d3 from 'd3';
 import { Distribution } from '../../models/distribution';
 
@@ -9,7 +23,8 @@ import { Distribution } from '../../models/distribution';
   styleUrls: ['./bar-chart.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BarChartComponent implements AfterViewInit, OnChanges {
+export class BarChartComponent
+  implements AfterViewInit, OnChanges, OnDestroy {
 
   @Input() data: Distribution[] = [];
   @Input() height = 0;
@@ -19,57 +34,91 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
   @Input() zoom = false;
   @Input() ticks = 5;
   @Input() color = '';
+
   @Output() barClick = new EventEmitter<Distribution>();
 
-  @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
+  @ViewChild('container', { static: true })
+  container!: ElementRef<HTMLDivElement>;
+
   width = 0;
+
   private resizeObserver!: ResizeObserver;
-  private element: any;
+  private resizeTimeout: any;
+
+  private element!: HTMLElement;
   private svg: any;
 
   private margin = { top: 10, right: 20, bottom: 40, left: 100 };
 
-  constructor(private el: ElementRef) {
+  constructor(
+    private el: ElementRef,
+    private zone: NgZone
+  ) {
     effect(() => {
-      const data = this.isLoading;
-      if (this.isLoading) {
+      if (this.isLoading && this.element) {
         d3.select(this.element).select('svg').remove();
         d3.select(this.element).select('.no-data').remove();
       }
     });
   }
 
+  // ===============================
+  // INIT
+  // ===============================
   ngAfterViewInit(): void {
-    this.element = this.el.nativeElement.querySelector('.bar-chart');
-    this.resizeObserver = new ResizeObserver(() => {
-      this.width = this.container.nativeElement.clientWidth;
-      this.createChart();
+    this.element =
+      this.el.nativeElement.querySelector('.bar-chart');
+
+    this.zone.runOutsideAngular(() => {
+      this.resizeObserver = new ResizeObserver(() => {
+        clearTimeout(this.resizeTimeout);
+
+        this.resizeTimeout = setTimeout(() => {
+          const width =
+            this.container.nativeElement.clientWidth;
+
+          if (!width) return; // ⛔ TAB OCULTO
+
+          this.width = width;
+          this.createChart();
+        }, 100); // debounce
+      });
+
+      this.resizeObserver.observe(
+        this.container.nativeElement
+      );
     });
-
-    this.resizeObserver.observe(this.container.nativeElement);
   }
 
-  ngOnDestroy() {
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-    }
+  ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+    clearTimeout(this.resizeTimeout);
   }
 
+  // ===============================
+  // INPUT CHANGES
+  // ===============================
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data'] && this.element) {
+    if (changes['data'] && this.element && this.width) {
       this.createChart();
     }
   }
 
+  // ===============================
+  // CHART
+  // ===============================
   private createChart(): void {
     const container = d3.select(this.element);
+
+    // 🔥 LIMPIEZA OBLIGATORIA
     container.select('svg').remove();
     container.select('.no-data').remove();
-    if (this.isLoading)
-      return;
+
+    if (this.isLoading) return;
 
     if (!this.width || !this.data?.length) {
-      container.append('div')
+      container
+        .append('div')
         .attr('class', 'no-data')
         .style('text-align', 'center')
         .style('padding', '20px')
@@ -80,22 +129,27 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
     }
 
     this.margin.left = this.extraLabelSpace ? 180 : 100;
+
     const { width, height, margin } = this;
-    this.svg = d3.select(this.element)
+
+    this.svg = container
       .append('svg')
       .attr('width', width)
       .attr('height', height)
       .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`)
-      .on('click', (event: any) => {
+      .attr(
+        'transform',
+        `translate(${margin.left},${margin.top})`
+      )
+      .on('click', () => {
         this.barClick.emit({
-          code: "OTHER",
-          label: "",
+          code: 'OTHER',
+          label: '',
           count: 0,
           percentage: 0,
-          color: ""
-        })
-      })
+          color: ''
+        });
+      });
 
     this.updateChart();
   }
@@ -115,9 +169,8 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
       .domain(this.data.map(d => d.label))
       .range([0, chartHeight])
       .padding(0.2);
-
-    // Ejes
-    this.svg.selectAll('.x-axis').remove();
+    
+        this.svg.selectAll('.x-axis').remove();
     this.svg.selectAll('.y-axis').remove();
 
     if (this.width > 300) {
@@ -141,8 +194,8 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
 
     const yAxis = this.svg.append('g')
       .attr('class', 'y-axis')
-      .call(d3.axisLeft(y).tickSize(0))
-
+      .call(d3.axisLeft(y).tickSize(0));
+    
     const yLabels = yAxis.selectAll('text')
       .attr('x', -5)
       .attr('font-size', '1.2em')
@@ -172,8 +225,7 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
             .attr('transform', 'scale(1)');
         });
     }
-
-    // Barras
+    
     this.svg.selectAll('.bar')
       .data(this.data)
       .join('rect')
@@ -193,7 +245,7 @@ export class BarChartComponent implements AfterViewInit, OnChanges {
       .transition()
       .duration(600)
       .attr('width', (d: { count: d3.NumberValue; }) => x(d.count));
-
+    
     const labels = this.svg.selectAll('.label')
       .data(this.data)
       .join('text')
