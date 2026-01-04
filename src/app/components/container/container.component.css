@@ -2,11 +2,34 @@
   display: block;
 }
 
-/* styles.css o component.css */
-@keyframes spin-slow {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.bars-loader {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 24px;
 }
-.animate-spin-slow {
-  animation: spin-slow 2s linear infinite;
+
+.bars-loader span {
+  width: 4px;
+  height: 100%;
+  background-color: #4f7cff;
+  animation: bars 1s infinite ease-in-out;
+  border-radius: 2px;
+}
+
+.bars-loader span:nth-child(1) { animation-delay: 0s; }
+.bars-loader span:nth-child(2) { animation-delay: 0.1s; }
+.bars-loader span:nth-child(3) { animation-delay: 0.2s; }
+.bars-loader span:nth-child(4) { animation-delay: 0.3s; }
+.bars-loader span:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes bars {
+  0%, 100% {
+    height: 30%;
+    opacity: 0.5;
+  }
+  50% {
+    height: 100%;
+    opacity: 1;
+  }
 }

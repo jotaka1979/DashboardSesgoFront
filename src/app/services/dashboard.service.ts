@@ -9,12 +9,14 @@ export class DashboardService {
   private apiUrl = `${environment.apiUrl}/report`;
 
   constructor(private http: HttpClient) { }
-  
 
   getHateDistribution(payload: any): Observable<HttpEvent<any>> {
     const req = new HttpRequest('POST', `${this.apiUrl}/hate`, payload);
     return this.http.request(req);
-
   }
 
+  getDateRange(payload: any): Observable<HttpEvent<any>> {
+    const req = new HttpRequest('POST', `${this.apiUrl}/dates`, payload);
+    return this.http.request(req);
+  }
 }

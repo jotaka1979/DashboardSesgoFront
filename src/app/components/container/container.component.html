@@ -29,16 +29,16 @@
           Procesar
         </button>
         }
-        <button routerLink="/profile" (click)="searchClick()"
-          class="flex items-center gap-3 text-gray-700 hover:text-blue-600">
-          <ng-icon name="heroMagnifyingGlass" class="w-6 h-6"></ng-icon>
-          Abrir otro dataset
-        </button>
-
         <button routerLink="/settings" (click)="deleteClick()"
           class="flex items-center gap-3 text-gray-700 hover:text-blue-600">
           <ng-icon name="heroTrash" class="w-6 h-6"></ng-icon>
           Eliminar dataset
+        </button>
+        <hr>
+        <button routerLink="/profile" (click)="searchClick()"
+          class="flex items-center gap-3 text-gray-700 hover:text-blue-600">
+          <ng-icon name="heroMagnifyingGlass" class="w-6 h-6"></ng-icon>
+          Abrir otro dataset
         </button>
       </nav>
     </div>
@@ -48,12 +48,13 @@
   <ng-content></ng-content>
   @if (loading) {
   <div class="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-sm z-50">
-    <div class="flex flex-col items-center gap-2">
-      <div class="flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="w-8 h-8 text-softBlue animate-spin-slow">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M9 17V9m4 8V5m4 12v-4" />
-        </svg>
+    <div class="flex flex-col items-center gap-3">
+      <div class="bars-loader">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
       <p class="text-gray-700 font-medium">Cargando...</p>
     </div>

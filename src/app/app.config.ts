@@ -5,6 +5,11 @@ import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideIcons } from '@ng-icons/core';
 import { heroPlusCircle, heroUserPlus, heroDocumentPlus,heroMagnifyingGlass, heroHomeModern , heroBars3, heroTrash, heroArrowPath } from '@ng-icons/heroicons/outline';
+import { LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+
+registerLocaleData(localeEs);
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,5 +28,6 @@ export const appConfig: ApplicationConfig = {
       heroTrash,
       heroArrowPath
     }),   
+     { provide: LOCALE_ID, useValue: 'es-ES' }
   ]
 };

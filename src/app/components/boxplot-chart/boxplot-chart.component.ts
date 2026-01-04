@@ -19,27 +19,27 @@ export class BoxplotChartComponent implements AfterViewInit, OnChanges {
   @Input() ticks = 5;
 
   @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
-public tooltip:any;
+  public tooltip: any;
   public bindTooltip = (
-    tooltip:any,
-  selection: any,
-  label: string,
-  valueFn: (d: any) => number
-) => {
-  selection
-    .on("mouseenter", (event: MouseEvent, d: any) => {
-      this.showTooltip(tooltip,
-        event,
-        `<strong>${d.category}</strong><br>${label}: ${valueFn(d)}`
-      );
-    })
-    .on("mousemove", (event: MouseEvent) => {
-      this.moveTooltip(tooltip,event);
-    })
-    .on("mouseleave", () => {
-      this.hideTooltip(tooltip);
-    });
-};
+    tooltip: any,
+    selection: any,
+    label: string,
+    valueFn: (d: any) => number
+  ) => {
+    selection
+      .on("mouseenter", (event: MouseEvent, d: any) => {
+        this.showTooltip(tooltip,
+          event,
+          `<strong>${d.category}</strong><br>${label}: ${valueFn(d)}`
+        );
+      })
+      .on("mousemove", (event: MouseEvent) => {
+        this.moveTooltip(tooltip, event);
+      })
+      .on("mouseleave", () => {
+        this.hideTooltip(tooltip);
+      });
+  };
 
   width = 0;
   private resizeObserver!: ResizeObserver;
@@ -107,34 +107,31 @@ public tooltip:any;
       .attr('height', height)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`)
-
-
-
     this.updateChart();
   }
 
   public showTooltip(tooltip: any, event: MouseEvent, html: string) {
     console.log("show", html)
     console.log("tool", this.tooltip)
-  tooltip
-    .style("opacity", 1)
-    .html(html)
-    .style("left", event.pageX + 12 + "px")
-    .style("top", event.pageY + 12 + "px");
-}
+    tooltip
+      .style("opacity", 1)
+      .html(html)
+      .style("left", event.pageX + 12 + "px")
+      .style("top", event.pageY + 12 + "px");
+  }
 
-public moveTooltip(tooltip: any,event: MouseEvent) {
-  console.log("move")
- this.tooltip
-    .style("left", event.pageX + 12 + "px")
-    .style("top", event.pageX + 12 + "px");
-}
+  public moveTooltip(tooltip: any, event: MouseEvent) {
+    console.log("move")
+    this.tooltip
+      .style("left", event.pageX + 12 + "px")
+      .style("top", event.pageX + 12 + "px");
+  }
 
-public hideTooltip(tooltip:any) {
-  console.log("hide")
-tooltip
-    .style("opacity", 0.5);
-}
+  public hideTooltip(tooltip: any) {
+    console.log("hide")
+    tooltip
+      .style("opacity", 0);
+  }
 
   private updateChart(): void {
 
@@ -144,24 +141,21 @@ tooltip
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
- const tooltip = d3.select('body')
+    const tooltip = d3.select('body')
       .append('div')
       .attr('class', 'boxplot-tooltip')
       .style('position', 'absolute')
+      .style('z-index', '999')
       .style('background', 'rgba(0,0,0,0.8)')
       .style('color', 'white')
       .style('padding', '6px 8px')
       .style('border-radius', '4px')
       .style('font-size', '12px')
       .style('pointer-events', 'none')
-      .html('hola')
-      .style('opacity', 1);
+      .style('opacity', 0);
 
     const g = this.svg;
 
-    // =====================
-    // Escalas
-    // =====================
     const y = d3.scaleBand()
       .domain(this.data.map(d => d.category))
       .range([0, chartHeight])
@@ -176,9 +170,6 @@ tooltip
       .nice()
       .range([0, chartWidth]);
 
-    // =====================
-    // Ejes
-    // =====================
     g.append("g")
       .call(d3.axisLeft(y));
 
@@ -218,53 +209,51 @@ tooltip
         .attr("stroke", "black");
 
       // Mediana
-    const median =  group.append("line")
+      const median = group.append("line")
         .attr("x1", x(d.median))
         .attr("x2", x(d.median))
         .attr("y1", 0)
         .attr("y2", y.bandwidth())
         .attr("stroke", "black");
 
-        this.bindTooltip(tooltip, median, "Mediana", d => d.median);
+      this.bindTooltip(tooltip, median, "Mediana", d => d.median);
 
-      
-      
-     const mean =    group.append("circle")
-          .attr("cx", x(d.mean))
-          .attr("cy", center)
-          .attr("r", 3)
-          .attr("fill", "red");
-        this.bindTooltip(tooltip, mean, "Media", d => d.mean);
+      const mean = group.append("circle")
+        .attr("cx", x(d.mean))
+        .attr("cy", center)
+        .attr("r", 3)
+        .attr("fill", "red");
+      this.bindTooltip(tooltip, mean, "Media", d => d.mean);
 
       // Min
-    const minLine = group.append("line")
-    .datum(d)
-  .attr("x1", x(d.min))
-  .attr("x2", x(d.min))
-  .attr("y1", y.bandwidth() * 0.25)
-  .attr("y2", y.bandwidth() * 0.75)
-  .attr("stroke", "black");
+      const minLine = group.append("line")
+        .datum(d)
+        .attr("x1", x(d.min))
+        .attr("x2", x(d.min))
+        .attr("y1", y.bandwidth() * 0.25)
+        .attr("y2", y.bandwidth() * 0.75)
+        .attr("stroke", "black");
 
-  const minHitbox = group.append("rect")
-  .datum(d)
-  .attr("x", x(d.min) - 6)
-  .attr("y", 0)
-  .attr("width", 12)
-  .attr("height", y.bandwidth())
-  .attr("fill", "transparent")
-  .style("pointer-events", "all");
+      const minHitbox = group.append("rect")
+        .datum(d)
+        .attr("x", x(d.min) - 6)
+        .attr("y", 0)
+        .attr("width", 12)
+        .attr("height", y.bandwidth())
+        .attr("fill", "transparent")
+        .style("pointer-events", "all");
 
-this.bindTooltip(tooltip, minHitbox, "Min", d => d.min);
+      this.bindTooltip(tooltip, minHitbox, "Min", d => d.min);
 
       // Max
-     const maxLine =  group.append("line")
+      const maxLine = group.append("line")
         .attr("x1", x(d.max))
         .attr("x2", x(d.max))
         .attr("y1", y.bandwidth() * 0.25)
         .attr("y2", y.bandwidth() * 0.75)
         .attr("stroke", "black");
 
-        this.bindTooltip(tooltip, maxLine, "Max", d => d.max);
+      this.bindTooltip(tooltip, maxLine, "Max", d => d.max);
     });
   }
 }

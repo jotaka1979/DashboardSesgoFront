@@ -10,28 +10,35 @@ import { MessageLength } from '../../models/MessageLength';
   styleUrls: ['./histo-chart.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HistoChartComponent implements AfterViewInit, OnChanges {
+export class HistoChartComponent
+  implements AfterViewInit, OnChanges {
 
-  @Input() data: MessageLength = { median: 0, mean: 0, std: 0, histogram: [] };
+  @Input() data: MessageLength = {
+    median: 0,
+    mean: 0,
+    std: 0,
+    histogram: []
+  };
+
   @Input() height = 250;
   @Input() chartTitle = '';
   @Input() description = '';
-  @Input() isLoading = false;  
+  @Input() isLoading = false;
   @Input() ticks = 5;
 
-  @ViewChild('container', { static: true }) container!: ElementRef<HTMLDivElement>;
+  @ViewChild('container', { static: true })
+  container!: ElementRef<HTMLDivElement>;
+
   width = 0;
   private histogram = signal<Histogram[]>([]);
-  private resizeObserver!: ResizeObserver;
-  private element: any;
+  private element!: HTMLElement;
   private svg: any;
 
   private margin = { top: 20, right: 20, bottom: 20, left: 40 };
 
   constructor(private el: ElementRef) {
     effect(() => {
-      const data = this.isLoading;
-      if (this.isLoading) {
+      if (this.isLoading && this.element) {
         d3.select(this.element).select('svg').remove();
         d3.select(this.element).select('.no-data').remove();
       }
@@ -39,42 +46,40 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
   }
 
   ngAfterViewInit(): void {
-    this.element = this.el.nativeElement.querySelector('.histo-chart');
-    console.log(this.element)
-    this.resizeObserver = new ResizeObserver(() => {
+    this.element =
+      this.el.nativeElement.querySelector('.histo-chart');
+
+    requestAnimationFrame(() => {
       this.width = this.container.nativeElement.clientWidth;
+
+      if (!this.width) return;
+
+      this.histogram.set(this.data.histogram);
       this.createChart();
     });
-
-    this.resizeObserver.observe(this.container.nativeElement);
-  }
-
-  ngOnDestroy() {
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log("on changes")
-    if (changes['data'] && this.element) {
-
+    if (
+      changes['data'] &&
+      this.width &&
+      this.element
+    ) {
       this.histogram.set(this.data.histogram);
-      console.log(this.histogram())
       this.createChart();
     }
   }
 
   private createChart(): void {
     const container = d3.select(this.element);
+
     container.select('svg').remove();
     container.select('.no-data').remove();
     container.selectAll('.histo-tooltip').remove();
-    if (this.isLoading)
-      return;
+
+    if (this.isLoading) return;
 
     if (!this.width || !this.histogram().length) {
-      console.log('append')
       container.append('div')
         .attr('class', 'no-data')
         .style('text-align', 'center')
@@ -86,13 +91,16 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
     }
 
     const { width, height, margin } = this;
-    this.svg = d3.select(this.element)
+
+    this.svg = container
       .append('svg')
       .attr('width', width)
       .attr('height', height)
       .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`)
-
+      .attr(
+        'transform',
+        `translate(${margin.left},${margin.top})`
+      );
 
     this.updateChart();
   }
@@ -109,6 +117,7 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
       .append('div')
       .attr('class', 'histo-tooltip')
       .style('position', 'absolute')
+      .style('z-index', '999') 
       .style('background', 'rgba(0,0,0,0.8)')
       .style('color', 'white')
       .style('padding', '6px 8px')
@@ -194,7 +203,7 @@ export class HistoChartComponent implements AfterViewInit, OnChanges {
       .on('mousemove', (event: any) => {
         tooltip
           .style('left', (event.pageX + 10) + 'px')
-          .style('top', (event.pageY - 28) + 'px');
+          .style('top', (event.pageY + 10) + 'px');
       })
       .on('mouseout', () => {
         tooltip.style('opacity', 0);

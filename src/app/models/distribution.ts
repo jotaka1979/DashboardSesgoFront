@@ -24,3 +24,8 @@ export interface DistributionResult {
   rawlength : MessageLength;
 
 }
+
+export interface DateRangeResult {
+  min: string;
+  max:string;
+}

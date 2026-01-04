@@ -1,0 +1,26 @@
+::ng-deep .custom-tabs {
+  background-color: #f3f4f6;
+  padding: 12px;
+  border-radius: 16px;
+}
+
+::ng-deep .custom-tabs .mat-mdc-tab-header {
+  border-bottom: none;
+}
+
+::ng-deep .custom-tabs .mat-mdc-tab {
+  border-radius: 6px;
+  margin-right: 8px;
+  padding: 8px 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+::ng-deep .custom-tabs .mat-mdc-tab.mdc-tab--active {
+  background-color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+::ng-deep .custom-tabs .mdc-tab__text-label {
+  color: #374151;
+}

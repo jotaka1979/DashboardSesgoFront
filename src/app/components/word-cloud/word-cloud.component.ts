@@ -27,6 +27,7 @@ export class WordCloudComponent
   @Input() data: Distribution[] = [];
   @Input() chartTitle = '';
   @Input() height = 250;
+  @Input() description = '';
   @Input() isLoading = false;
 
   @ViewChild('container', { static: true })

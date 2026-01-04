@@ -6,8 +6,7 @@ import { ContainerComponent } from '../../components/container/container.compone
 import { HateFilterComponent } from '../../components/hate-filter/hate-filter.component';
 import { HateTypeFilterComponent } from '../../components/hate-type-filter/hate-type-filter.component';
 import { HistoChartComponent } from '../../components/histo-chart/histo-chart.component';
-
-
+import { LabelType, NgxSliderModule, Options } from '@angular-slider/ngx-slider';
 import { DashboardStore } from './dashboard.store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Distribution } from '../../models/distribution';
@@ -21,14 +20,18 @@ import { MessageLength } from '../../models/MessageLength';
 import { BoxplotChartComponent } from '../../components/boxplot-chart/boxplot-chart.component';
 import { Boxplot } from '../../models/boxplot';
 import { MatTabsModule } from '@angular/material/tabs';
+import { DatePipe } from '@angular/common'
 @Component({
   selector: 'app-dashboard',
-  imports: [MatTabsModule, PieChartComponent, ContainerComponent, BarChartComponent, WordCloudComponent, HateFilterComponent, HateTypeFilterComponent, HistoChartComponent, BoxplotChartComponent],
+  imports: [DatePipe, NgxSliderModule, MatTabsModule, PieChartComponent, ContainerComponent, BarChartComponent, WordCloudComponent, HateFilterComponent, HateTypeFilterComponent, HistoChartComponent, BoxplotChartComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
+
+
+
 
   public databox: Boxplot[] = [
     {
@@ -108,14 +111,36 @@ export class DashboardComponent implements OnInit {
   wordData = signal<Distribution[]>([]);
   entityData = signal<Distribution[]>([]);
   cleanedLengthResult = signal<MessageLength[]>([])
-   activeTab = signal<number>(1);
+  activeTab = signal<number>(1);
   hateFilter = signal<boolean | null>(null);
   hateTypeFilter = signal<string | null>(null);
   languageFilter = signal<string>("OTHER");
-
+  dateFromFilter = signal<string>("");
+  dateToFilter = signal<string>("");
+  dateMin = signal<number>(0);
+  dateMax = signal<number>(0);
+  options = signal<Options>({});
   private statusStore = inject(StatusStore);
 
   constructor(public store: DashboardStore, private route: ActivatedRoute, public datasetStore: DatasetStore, private snackBar: MatSnackBar, private router: Router, private dialog: MatDialog, private processService: ProcessService) {
+
+effect(() => {
+  const min = this.store.minDate().split("T")[0];
+  const max = this.store.maxDate().split("T")[0];
+
+  this.dateMin.set(this.toLocalMidnight(min));
+  this.dateMax.set(this.toLocalMidnight(max));
+
+  this.options.set({
+    floor: this.dateMin(),
+    ceil: this.dateMax(),
+    step: 24 * 60 * 60 * 1000,
+    translate: (value: number): string => {
+      return new Date(value).toLocaleDateString();
+    }
+  });
+});
+
     effect(() => {
       const value = this.hateFilter();
     });
@@ -203,16 +228,25 @@ export class DashboardComponent implements OnInit {
   dataset = this.statusStore.dataset;
   public processEnabled = computed(() => this.dataset().status !== 'EN PROCESO' && this.dataset().status !== 'LISTO');
 
+toLocalMidnight(dateStr: string): number {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).getTime();
+}
+
   loadData() {
     if (this.hateFilter() === false)
       this.hateTypeFilter.set(null)
 
-    let payload: any = { "dataset_id": this.datasetId(), "hate": this.hateFilter(), "hatetype": this.hateTypeFilter() }
+    let payload: any = { "dataset_id": this.datasetId(), 
+      "hate": this.hateFilter(), 
+      "hatetype": this.hateTypeFilter(), 
+      "date_from": this.dateFromFilter(), 
+      "date_to": this.dateToFilter() }
+    console.log("pay", payload);
     if (this.languageFilter() != "OTHER")
       payload.language = this.languageFilter();
     this.store.loadHateDistribution(payload);
-    this.statusStore.loadDataset(this.datasetId());
-    this.statusStore.loadAllDatasets();
+
   }
 
   ngOnInit() {
@@ -220,6 +254,9 @@ export class DashboardComponent implements OnInit {
       const id = params.get('dataset_id');
       if (id) {
         this.datasetId.set(+id);
+        this.statusStore.loadDataset(this.datasetId());
+        this.statusStore.loadAllDatasets();
+        this.store.loadDateRange({ "dataset_id": id })
       }
     });
   }
@@ -298,12 +335,32 @@ export class DashboardComponent implements OnInit {
   }
 
   get hateChartTitle(): string {
-    return `Distribución de Odio y No Odio (${this.sum(this.store.hateResult())} registros)`;
+    return `Distribución de Odio y No Odio`;
+  }
+
+    get recordsCount(): string {
+    return `${this.sum(this.store.hateResult())}`;
   }
 
   onTabChange(index: number) {
     console.log('Tab activo:', index);
-     this.activeTab.set(index);
+    this.activeTab.set(index);
+  }
+
+  onRangeChangeEnd(event: any) {
+    console.log(event.value)
+    console.log(event.highValue)
+
+    const fromDate = new Date(event.value);
+    const toDate = new Date(event.highValue);
+    this.dateFromFilter.set(fromDate.toISOString().split('T')[0]);
+    this.dateToFilter.set(toDate.toISOString().split('T')[0]);
+
+        console.log(this.dateFromFilter())
+    console.log(this.dateToFilter())
+    //this.loadData();
+
+   
   }
 
 }
